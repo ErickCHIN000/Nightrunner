@@ -1,0 +1,84 @@
+<UserControl x:Class="Nightrunner.UI.Views.AnimationsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource Bg}" Foreground="{StaticResource Fg}"
+             FontFamily="{StaticResource UiFont}" FontSize="{StaticResource UiSize}">
+    <DockPanel Margin="8">
+        <TextBox DockPanel.Dock="Top" x:Name="Search" Margin="0,0,0,6" TextChanged="Search_TextChanged"
+                 ToolTip="Words must all match (sequence, clip or bank)."/>
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+            <Label DockPanel.Dock="Left" Content="bank"/>
+            <ComboBox x:Name="BankFilter" SelectionChanged="BankFilter_Changed"/>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+            <Label DockPanel.Dock="Left" Content="rpack"/>
+            <ComboBox x:Name="PackFilter" SelectionChanged="PackFilter_Changed"/>
+        </DockPanel>
+        <TextBlock DockPanel.Dock="Bottom" x:Name="Status" Style="{StaticResource Dim}" Margin="2,6,0,0"/>
+        <ListView x:Name="Rows" SelectionChanged="Rows_SelectionChanged" SizeChanged="Rows_SizeChanged"
+                  SelectionMode="Single"
+                  VirtualizingPanel.IsVirtualizing="True"
+                  VirtualizingPanel.VirtualizationMode="Recycling"
+                  VirtualizingPanel.ScrollUnit="Item">
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Export .cast..." Click="Export_Click" Tag=".cast"
+                              ToolTip="The clip as a Cast animation over the track's range, bones named from the shown skeleton"/>
+                    <MenuItem Header="Export .glb..." Click="Export_Click" Tag=".glb"
+                              ToolTip="The shown skeleton (else the player's) with the clip as a glTF animation"/>
+                    <MenuItem Header="Add to project" Click="AddToProject_Click"
+                              ToolTip="The whole clip as .cast (and .glb on the shown skeleton), rebuilt under its own name"/>
+                    <MenuItem Header="Copy name" Click="CopyName_Click"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn x:Name="ColName" Header="sequence" Width="260">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" Style="{StaticResource CellName}"
+                                           Opacity="{Binding Opacity}" ToolTip="{Binding Clip}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="clip" Width="220">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ClipName}" Style="{StaticResource CellDim}"
+                                           Opacity="{Binding Opacity}" ToolTip="{Binding Clip}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="bank" Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Bank}" Style="{StaticResource CellDim}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="rpack" Width="170">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Pack}" Style="{StaticResource CellDim}" ToolTip="{Binding PackTip}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="fps" Width="44">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Fps}" Style="{StaticResource CellNum}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="frames" Width="70">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Frames}" Style="{StaticResource CellNum}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,86 @@
+<UserControl x:Class="Nightrunner.UI.Views.TexturesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="{StaticResource Bg}" Foreground="{StaticResource Fg}"
+             FontFamily="{StaticResource UiFont}" FontSize="{StaticResource UiSize}">
+
+    <Grid Margin="8">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="260"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- the list -->
+        <DockPanel Grid.Column="0">
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                <ComboBox DockPanel.Dock="Right" x:Name="FormatFilter" Width="150"
+                          SelectionChanged="FormatFilter_Changed"/>
+                <TextBox x:Name="Search" Margin="0,0,8,0"
+                         TextChanged="Search_TextChanged"
+                         ToolTip="Words must all match. #123 matches a logical index."/>
+            </DockPanel>
+
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                <Label DockPanel.Dock="Left" Content="rpack"/>
+                <ComboBox x:Name="PackFilter" SelectionChanged="PackFilter_Changed"
+                          ToolTip="Show only the textures of one pack"/>
+            </DockPanel>
+
+            <TextBlock DockPanel.Dock="Bottom" x:Name="Status" Style="{StaticResource Dim}" Margin="2,6,0,0"/>
+
+            <ListView x:Name="Rows" SelectionChanged="Rows_SelectionChanged" SizeChanged="Rows_SizeChanged"
+                      VirtualizingPanel.IsVirtualizing="True"
+                      VirtualizingPanel.VirtualizationMode="Recycling"
+                      VirtualizingPanel.ScrollUnit="Item"
+                      ScrollViewer.IsDeferredScrollingEnabled="False">
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Export as PNG..." Click="ExportPng_Click"/>
+                        <MenuItem Header="Export DDS..." Click="ExportDds_Click"/>
+                        <MenuItem Header="Export raw parts to folder..." Click="ExportRaw_Click"/>
+                        <Separator/>
+                        <MenuItem Header="Add texture to project" Click="AddToProject_Click"/>
+                        <Separator/>
+                        <MenuItem Header="Copy name" Click="CopyName_Click"/>
+                    </ContextMenu>
+                </ListView.ContextMenu>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn x:Name="ColName" Header="name" Width="240">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" Style="{StaticResource CellName}"
+                                               ToolTip="{Binding Name}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="format" Width="104">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding FormatText}" Style="{StaticResource CellType}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="size" Width="94">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding SizeText}" Style="{StaticResource CellNum}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="mips" Width="44">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MipText}" Style="{StaticResource CellNum}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </DockPanel>
+
+    </Grid>
+</UserControl>

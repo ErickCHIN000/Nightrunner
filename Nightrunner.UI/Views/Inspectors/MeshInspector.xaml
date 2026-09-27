@@ -1,0 +1,163 @@
+<UserControl x:Class="Nightrunner.UI.Views.Inspectors.MeshInspector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Nightrunner.UI.Views.Inspectors">
+    <DockPanel>
+        <TextBox DockPanel.Dock="Top" x:Name="Info" Style="{StaticResource Mono}" IsReadOnly="True"
+                 Height="96" Margin="0,0,0,6" VerticalScrollBarVisibility="Auto"/>
+        <TabControl>
+            <TabItem Header="Parts">
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="0,4,0,4">
+                        <Button DockPanel.Dock="Left" Content="All" Click="All_Click" Margin="0,0,8,0"/>
+                        <TextBlock x:Name="PartsNote" Style="{StaticResource Dim}" VerticalAlignment="Center"/>
+                    </DockPanel>
+                    <ListView x:Name="Parts" SelectionChanged="Parts_SelectionChanged"
+                              VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="entry" Width="44">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Entry}" Style="{StaticResource CellNum}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="lod" Width="34">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Lod}" Style="{StaticResource CellNum}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="sub" Width="34">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Submesh}" Style="{StaticResource CellNum}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn x:Name="ColPartMaterial" Header="material" Width="170">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Material}" Style="{StaticResource CellName}" ToolTip="{Binding Material}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="fmt" Width="34">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Format}" Style="{StaticResource CellType}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="tris" Width="64">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Tris}" Style="{StaticResource CellNum}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="bones" Width="46">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Bones}" Style="{StaticResource CellNum}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </DockPanel>
+            </TabItem>
+
+            <TabItem Header="Materials">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" MinHeight="80"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*" MinHeight="80"/>
+                    </Grid.RowDefinitions>
+                    <ListView Grid.Row="0" x:Name="Materials" SelectionChanged="Materials_SelectionChanged" Margin="0,4,0,0">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="slot" Width="38">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Slot}" Style="{StaticResource CellNum}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn x:Name="ColMaterial" Header="material" Width="220">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Name}" Style="{StaticResource CellName}" ToolTip="{Binding Name}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="kind" Width="52">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Kind}" Style="{StaticResource CellType}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="sdb" Width="80">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Sdb}" Style="{StaticResource CellDim}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Background="Transparent"/>
+                    <ListView Grid.Row="2" x:Name="Textures" MouseDoubleClick="Textures_DoubleClick">
+                        <ListView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Show in Textures" Click="ShowTexture_Click"/>
+                                <MenuItem Header="Copy name" Click="CopyTexture_Click"/>
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn x:Name="ColTexture" Header="texture" Width="220">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Name}" Style="{StaticResource CellName}" ToolTip="{Binding Name}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="slot" Width="110">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Slot}" Style="{StaticResource CellType}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="packs" Width="50">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Status}" Style="{StaticResource CellDim}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Skins">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="2*" MinHeight="80"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*" MinHeight="60"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*" MinHeight="60"/>
+                    </Grid.RowDefinitions>
+                    <DockPanel Grid.Row="0" Margin="0,4,0,4">
+                        <Button DockPanel.Dock="Left" Content="Copy" Click="CopySkn_Click" Margin="0,0,6,0"/>
+                        <Button DockPanel.Dock="Left" Content="Export..." Click="ExportSkn_Click" Margin="0,0,8,0"/>
+                        <TextBlock x:Name="SkinsNote" Style="{StaticResource Dim}" VerticalAlignment="Center"
+                                   TextTrimming="CharacterEllipsis"/>
+                    </DockPanel>
+                    <ListView Grid.Row="1" x:Name="SkinList" SelectionChanged="SkinList_SelectionChanged"
+                              VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="#" Width="38">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Index}" Style="{StaticResource CellNum}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn x:Name="ColSkin" Header="skin" Width="190">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Name}" Opacity="{Binding Opacity}" Style="{StaticResource CellName}" ToolTip="{Binding Tip}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="color" Width="44">
+                                    <GridViewColumn.CellTemplate><DataTemplate><Rectangle Width="26" Height="12" Fill="{Binding Swatch}" Stroke="{StaticResource Line}" ToolTip="{Binding ColorTip}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="use" Width="36">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Uses}" Style="{StaticResource CellNum}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="mat" Width="36">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Replaces}" Style="{StaticResource CellNum}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="srf" Width="36">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Surfaces}" Style="{StaticResource CellNum}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <GridSplitter Grid.Row="2" Height="5" HorizontalAlignment="Stretch" Background="Transparent"/>
+                    <ListView Grid.Row="3" x:Name="SkinDetail" MouseDoubleClick="SkinDetail_DoubleClick">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="kind" Width="100">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Kind}" Style="{StaticResource CellType}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn x:Name="ColSkinDetail" Header="value" Width="260">
+                                    <GridViewColumn.CellTemplate><DataTemplate><TextBlock Text="{Binding Text}" Style="{StaticResource CellName}" ToolTip="{Binding Text}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="" Width="36">
+                                    <GridViewColumn.CellTemplate><DataTemplate><Rectangle Width="26" Height="12" Fill="{Binding Swatch}"/></DataTemplate></GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <GridSplitter Grid.Row="4" Height="5" HorizontalAlignment="Stretch" Background="Transparent"/>
+                    <TextBox Grid.Row="5" x:Name="Skn" Style="{StaticResource Mono}" IsReadOnly="True"
+                             VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Bones">
+                <local:BoneList x:Name="BoneRows"/>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</UserControl>

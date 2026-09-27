@@ -1,0 +1,14 @@
+bin/
+obj/
+.vs/
+*.user
+__pycache__/
+nightrunner-main/
+# local only: agent worktrees and check logs, extracted game files, test run captures
+.claude/
+/mods/
+TestResults/
+# optional native audio decoder: built locally (tools/vgmstream/build-vgmstream.ps1), never committed
+third_party/vgmstream/win-x64/
+# maintainer's private agent notes
+CLAUDE.local.md

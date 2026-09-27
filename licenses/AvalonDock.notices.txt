@@ -1,0 +1,39 @@
+AvalonDock 5.0.0: notices retained under Ms-PL section 3(C)
+
+Source: https://github.com/Dirkster99/AvalonDock at tag v5.0.0 (commit 408dc2896e2f41f3bb79a15207f160edee8a6792),
+the commit the Dirkster.AvalonDock* 5.0.0 packages name. The licence is AvalonDock.Ms-PL.txt.
+Each block below is copied verbatim from the upstream file named above it;
+only the ruled separator lines are added.
+
+----- source/Components/AvalonDock/Themes/generic.xaml (lines 1-10) -----
+<!--
+	************************************************************************
+	AvalonDock
+	
+	Copyright (C) 2007-2013 Xceed Software Inc.
+	
+	This program is provided to you under the terms of the Microsoft Public
+	License (Ms-PL) as published at https://opensource.org/licenses/MS-PL
+	************************************************************************
+-->
+
+----- source/Components/AvalonDock.Themes.VS2013/VsThemeResources.cs (lines 1-8) -----
+/************************************************************************
+   AvalonDock
+
+   Copyright (C) 2007-2013 Xceed Software Inc.
+
+   This program is provided to you under the terms of the Microsoft Public
+   License (Ms-PL) as published at https://opensource.org/licenses/MS-PL
+ ************************************************************************/
+
+----- source/Components/AvalonDock/Controls/Shell/WindowChrome.cs (lines 1-3) -----
+/**************************************************************************\
+	Copyright Microsoft Corporation. All Rights Reserved.
+\**************************************************************************/
+
+----- source/Directory.Build.props (line 14) -----
+		<Copyright>2017-2026</Copyright>
+
+----- source/Directory.Build.props (line 18) -----
+		<Authors>https://github.com/Dirkster99/AvalonDock</Authors>

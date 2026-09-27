@@ -1,0 +1,48 @@
+<UserControl x:Class="Nightrunner.UI.Views.Inspectors.ModelInspector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Nightrunner.UI.Views.Inspectors">
+    <DockPanel>
+        <TextBox DockPanel.Dock="Top" x:Name="Info" Style="{StaticResource Mono}" IsReadOnly="True"
+                 Height="96" Margin="0,0,0,6" VerticalScrollBarVisibility="Auto"/>
+        <TabControl>
+            <TabItem Header="Slots">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Bottom" x:Name="TreeNote" Style="{StaticResource Dim}" Margin="2,4,0,0"
+                               TextTrimming="CharacterEllipsis"/>
+                    <TreeView x:Name="Tree" Background="{StaticResource Bg}" Foreground="{StaticResource Fg}"
+                              BorderThickness="0" MouseDoubleClick="Tree_DoubleClick"
+                              VirtualizingPanel.IsVirtualizing="True">
+                        <TreeView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Reveal" Click="Reveal_Click"/>
+                                <MenuItem Header="Copy" Click="Copy_Click"/>
+                            </ContextMenu>
+                        </TreeView.ContextMenu>
+                        <TreeView.ItemContainerStyle>
+                            <Style TargetType="TreeViewItem">
+                                <Setter Property="IsExpanded" Value="{Binding Expanded, Mode=TwoWay}"/>
+                                <Setter Property="Foreground" Value="{StaticResource Fg}"/>
+                            </Style>
+                        </TreeView.ItemContainerStyle>
+                        <TreeView.Resources>
+                            <HierarchicalDataTemplate DataType="{x:Type local:ModelNode}" ItemsSource="{Binding Children}">
+                                <StackPanel Orientation="Horizontal" Opacity="{Binding Opacity}" ToolTip="{Binding Tip}">
+                                    <TextBlock Text="{Binding Kind}" Style="{StaticResource CellType}" Width="54"/>
+                                    <TextBlock Text="{Binding Text}" Foreground="{Binding Brush, TargetNullValue={StaticResource FgBright}}"/>
+                                    <TextBlock Text="{Binding Detail}" Style="{StaticResource CellDim}" Margin="8,0,0,0"/>
+                                </StackPanel>
+                            </HierarchicalDataTemplate>
+                        </TreeView.Resources>
+                    </TreeView>
+                </DockPanel>
+            </TabItem>
+            <TabItem Header="Bones">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" x:Name="BonesNote" Style="{StaticResource Dim}" Margin="2,4,0,4"/>
+                    <local:BoneList x:Name="Bones"/>
+                </DockPanel>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</UserControl>

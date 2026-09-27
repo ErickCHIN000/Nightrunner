@@ -1,0 +1,13 @@
+<Project>
+  <!-- product metadata stamped into every assembly (file properties, the exe's version) -->
+  <PropertyGroup>
+    <Product>Nightrunner</Product>
+    <Company>ErickCHIN000</Company>
+    <Authors>ErickCHIN000 and Nightrunner contributors</Authors>
+    <Copyright>Copyright (c) 2026 ErickCHIN000 and Nightrunner contributors</Copyright>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionSuffix>rc.1</VersionSuffix>
+    <!-- a publish (a release) carries no debug symbols -->
+    <DebugType Condition="'$(_IsPublishing)' == 'true'">none</DebugType>
+  </PropertyGroup>
+</Project>

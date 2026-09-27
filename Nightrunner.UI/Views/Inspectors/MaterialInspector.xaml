@@ -1,0 +1,139 @@
+<UserControl x:Class="Nightrunner.UI.Views.Inspectors.MaterialInspector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <DockPanel>
+        <TextBox DockPanel.Dock="Top" x:Name="Info" Style="{StaticResource Mono}" IsReadOnly="True"
+                 Height="78" Margin="0,0,0,6" VerticalScrollBarVisibility="Auto"/>
+
+        <DockPanel DockPanel.Dock="Bottom" Margin="0,6,0,0">
+            <Button DockPanel.Dock="Left" Content="Add textures" Click="Add_Click" Margin="0,0,6,0"
+                    ToolTip="Put every texture this material draws with in the open project"/>
+            <Button DockPanel.Dock="Left" Content="Copy names" Click="Copy_Click" Margin="0,0,6,0"/>
+            <TextBlock x:Name="Note" Style="{StaticResource Dim}" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis"/>
+        </DockPanel>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" MinHeight="90"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*" MinHeight="90"/>
+            </Grid.RowDefinitions>
+
+            <DockPanel Grid.Row="0">
+                <TextBlock DockPanel.Dock="Top" x:Name="TextureHeader" Style="{StaticResource Dim}"
+                           Margin="2,0,0,4" Text="textures"/>
+                <ListView x:Name="Textures" MouseDoubleClick="Textures_DoubleClick"
+                          VirtualizingPanel.IsVirtualizing="True"
+                          VirtualizingPanel.VirtualizationMode="Recycling">
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Show in Textures" Click="Show_Click"/>
+                            <MenuItem Header="Copy name" Click="CopyOne_Click"/>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn x:Name="ColTexture" Header="texture" Width="210">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" Style="{StaticResource CellName}"
+                                                   ToolTip="{Binding Name}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="slot" Width="120">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Slot}" Style="{StaticResource CellType}"
+                                                   ToolTip="{Binding SlotTip}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="in packs" Width="66">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Status}" Style="{StaticResource CellDim}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </DockPanel>
+
+            <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Background="Transparent"/>
+
+            <TabControl Grid.Row="2" x:Name="Lower" SelectionChanged="Lower_Changed">
+                <TabItem Header="Parameters">
+                    <DockPanel>
+                        <DockPanel DockPanel.Dock="Top" Margin="2,0,0,4">
+                            <CheckBox DockPanel.Dock="Right" x:Name="ShowDefaults" Content="unset too"
+                                      Click="ShowDefaults_Click"
+                                      ToolTip="Also list the preset's parameters this material leaves at their default"/>
+                            <TextBlock x:Name="ParameterHeader" Style="{StaticResource Dim}" Text="parameters"/>
+                        </DockPanel>
+                        <ListView x:Name="Parameters"
+                                  VirtualizingPanel.IsVirtualizing="True"
+                                  VirtualizingPanel.VirtualizationMode="Recycling">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn x:Name="ColParameter" Header="parameter" Width="180">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Name}" Style="{StaticResource CellName}"
+                                                           ToolTip="{Binding Tip}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="value" Width="150">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Value}" Style="{StaticResource CellType}"
+                                                           ToolTip="{Binding Tip}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="state" Width="66">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding State}" Style="{StaticResource CellDim}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </DockPanel>
+                </TabItem>
+                <TabItem Header="Used by" x:Name="UsedTab">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <DockPanel Grid.Row="0" Margin="2,4,0,4">
+                            <Button DockPanel.Dock="Right" x:Name="StopScan" Content="Stop" Click="StopScan_Click"
+                                    Visibility="Collapsed"/>
+                            <TextBlock x:Name="MeshesHeader" Style="{StaticResource Dim}" Text="meshes"
+                                       VerticalAlignment="Center"/>
+                        </DockPanel>
+                        <ListView Grid.Row="1" x:Name="UsedMeshes" MouseDoubleClick="UsedMeshes_DoubleClick"
+                                  VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
+                                  ToolTip="Double-click shows it in Meshes"/>
+                        <TextBlock Grid.Row="2" x:Name="ModelsHeader" Style="{StaticResource Dim}" Text="models"
+                                   Margin="2,6,0,4"/>
+                        <ListView Grid.Row="3" x:Name="UsedModels" MouseDoubleClick="UsedModels_DoubleClick"
+                                  VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
+                                  ToolTip="Double-click shows it in Models"/>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </DockPanel>
+</UserControl>

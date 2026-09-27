@@ -1,0 +1,61 @@
+<UserControl x:Class="Nightrunner.UI.Views.LogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="{StaticResource Bg}" Foreground="{StaticResource Fg}"
+             FontFamily="{StaticResource UiFont}" FontSize="{StaticResource UiSize}">
+    <DockPanel Margin="8">
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+            <ToggleButton DockPanel.Dock="Right" x:Name="BtnFollow" Content="follow" IsChecked="True"
+                          Margin="6,0,0,0" ToolTip="Scroll to the newest line"/>
+            <Button DockPanel.Dock="Right" Content="Copy" Click="Copy_Click" Padding="12,4" Margin="6,0,0,0"/>
+            <Button DockPanel.Dock="Right" Content="Save…" Click="Save_Click" Padding="12,4" Margin="6,0,0,0"/>
+            <Button DockPanel.Dock="Right" Content="Clear" Click="Clear_Click" Padding="12,4" Margin="6,0,0,0"/>
+            <TextBox x:Name="Filter" TextChanged="Filter_Changed"
+                     ToolTip="Show only lines containing this text"/>
+        </DockPanel>
+
+        <TextBlock DockPanel.Dock="Bottom" x:Name="Status" Style="{StaticResource Dim}" Margin="2,6,0,0"/>
+
+        <ListView x:Name="Rows" SelectionMode="Extended"
+                  VirtualizingPanel.IsVirtualizing="True"
+                  VirtualizingPanel.VirtualizationMode="Recycling">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="time" Width="72">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding TimeText}" Style="{StaticResource CellNum}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="source" Width="86">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Source}" Foreground="{DynamicResource Accent}"
+                                           FontSize="12"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn x:Name="ColMessage" Header="message" Width="600">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Message}" Foreground="{Binding LevelBrush}"
+                                           TextTrimming="CharacterEllipsis" ToolTip="{Binding Message}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="took" Width="80">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DurationText}" Style="{StaticResource CellNum}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </DockPanel>
+</UserControl>

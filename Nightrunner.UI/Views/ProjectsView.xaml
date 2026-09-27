@@ -1,0 +1,248 @@
+<UserControl x:Class="Nightrunner.UI.Views.ProjectsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="{StaticResource Bg}" Foreground="{StaticResource Fg}"
+             FontFamily="{StaticResource UiFont}" FontSize="{StaticResource UiSize}">
+    <Grid Margin="8">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300" MinWidth="180"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*" MinWidth="360"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- recent projects -->
+        <DockPanel Grid.Column="0">
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                <Button DockPanel.Dock="Left" Content="New" Click="New_Click" Padding="12,4" Margin="0,0,6,0"/>
+                <Button DockPanel.Dock="Left" Content="Open" Click="Open_Click" Padding="12,4"/>
+                <TextBlock/>
+            </DockPanel>
+            <TextBlock DockPanel.Dock="Top" Text="recent" Style="{StaticResource Dim}" Margin="2,0,0,4"/>
+            <ListBox x:Name="Recent" Style="{StaticResource PlainList}"
+                     MouseDoubleClick="Recent_DoubleClick" SelectionChanged="Recent_SelectionChanged"
+                     ContextMenuOpening="RecentMenu_Opening"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Open" Click="RecentOpen_Click"/>
+                        <MenuItem Header="Open in Explorer" Click="RecentReveal_Click"/>
+                        <Separator/>
+                        <MenuItem Header="Rename..." Click="RecentRename_Click"/>
+                        <MenuItem Header="Remove from list" Click="RecentRemove_Click"/>
+                        <MenuItem Header="Delete from disk..." Click="RecentDelete_Click"/>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Name}" Foreground="{StaticResource FgBright}"
+                                       TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Text="{Binding Folder}" FontSize="11" Foreground="{StaticResource FgFaint}"
+                                       TextTrimming="CharacterEllipsis" ToolTip="{Binding Folder}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+
+        <!-- the open project -->
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <DockPanel Grid.Row="0" Margin="0,0,0,8">
+                <Border DockPanel.Dock="Left" Width="4" Height="18" Background="{DynamicResource Accent}"
+                        Margin="0,0,10,0"/>
+                <TextBlock DockPanel.Dock="Left" x:Name="Title" Text="no project open" FontSize="15" FontWeight="SemiBold"
+                           Foreground="{StaticResource FgBright}" Margin="0,0,16,0"/>
+                <TextBlock x:Name="Meta" Style="{StaticResource Dim}" FontSize="11.5" TextAlignment="Right"
+                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                           ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}"/>
+            </DockPanel>
+
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2*" MinHeight="120"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="*" MinHeight="90"/>
+                </Grid.RowDefinitions>
+
+                <TabControl Grid.Row="0" x:Name="Tabs">
+                    <TabItem Header="Textures">
+                        <!-- the assets a build actually uses -->
+                        <DockPanel>
+                            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                                <TextBlock DockPanel.Dock="Left" x:Name="AssetsHeader" Text="textures"
+                                           Style="{StaticResource Dim}"/>
+                                <Button DockPanel.Dock="Right" Content="Remove" Click="AssetRemove_Click" Padding="12,4"
+                                        Margin="6,0,0,0"
+                                        ToolTip="Send the PNG and its sidecar to the Recycle Bin"/>
+                                <Button DockPanel.Dock="Right" Content="Open PNG" Click="AssetOpen_Click" Padding="12,4"
+                                        Margin="6,0,0,0" ToolTip="Open the PNG in whatever edits PNGs on this machine"/>
+                                <Button DockPanel.Dock="Right" Content="Refresh" Click="Refresh_Click" Padding="12,4"/>
+                                <TextBlock/>
+                            </DockPanel>
+
+                            <ListView x:Name="Assets" SelectionMode="Extended"
+                                      MouseDoubleClick="AssetOpen_Click"
+                                      VirtualizingPanel.IsVirtualizing="True"
+                                      VirtualizingPanel.VirtualizationMode="Recycling"
+                                      ScrollViewer.IsDeferredScrollingEnabled="False">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
+                                        <Setter Property="Height" Value="56"/>
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="" Width="54">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="#22262B" Width="48" Height="48"
+                                                            BorderBrush="{StaticResource Line}" BorderThickness="1">
+                                                        <Image Source="{Binding Thumbnail}" Stretch="Uniform"
+                                                               RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn x:Name="ColAsset" Header="texture" Width="240">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Name}"
+                                                                   Foreground="{StaticResource FgBright}"
+                                                                   TextTrimming="CharacterEllipsis"
+                                                                   ToolTip="{Binding Path}"/>
+                                                        <TextBlock Text="{Binding Detail}" FontSize="11"
+                                                                   Foreground="{StaticResource FgFaint}"
+                                                                   TextTrimming="CharacterEllipsis"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="size" Width="78">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding SizeText}" Style="{StaticResource CellNum}"
+                                                               VerticalAlignment="Center"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="was" Width="98">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding OriginalFormat}"
+                                                               Style="{StaticResource CellDim}"
+                                                               VerticalAlignment="Center"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="build as" Width="136">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <ComboBox ItemsSource="{Binding Formats}"
+                                                              SelectedItem="{Binding SelectedFormat, Mode=TwoWay}"
+                                                              Width="128" MinHeight="28" Padding="8,3,22,3"
+                                                              HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                              ToolTip="What this texture is encoded as when the project is built"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="on disk" Width="74">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding FileSizeText}"
+                                                               Style="{StaticResource CellNum}" VerticalAlignment="Center"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="modified" Width="104">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding ModifiedText}"
+                                                               Style="{StaticResource CellDim}" VerticalAlignment="Center"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </DockPanel>
+                    </TabItem>
+                    <!-- Meshes, Scenes, Models, Anims, Prefabs: one tab per kind the project has, built in code -->
+                </TabControl>
+
+                <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch"/>
+
+                <!-- everything else in the folder -->
+                <DockPanel Grid.Row="2">
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                        <TextBlock DockPanel.Dock="Left" x:Name="ContentsHeader" Text="contents"
+                                   Style="{StaticResource Dim}"/>
+                        <Button DockPanel.Dock="Right" Content="Remove" Click="Remove_Click" Padding="12,4"
+                                Margin="6,0,0,0" ToolTip="Send the selected items to the Recycle Bin"/>
+                        <Button DockPanel.Dock="Right" Content="Add folder" Click="AddFolder_Click" Padding="12,4"
+                                Margin="6,0,0,0"/>
+                        <Button DockPanel.Dock="Right" Content="Add files" Click="AddFiles_Click" Padding="12,4"/>
+                        <TextBlock/>
+                    </DockPanel>
+
+                    <ListView x:Name="Contents" SelectionMode="Extended" MouseDoubleClick="Contents_DoubleClick">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="item" Width="300">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Name}" Foreground="{Binding NameBrush}"
+                                                       TextTrimming="CharacterEllipsis" ToolTip="{Binding FullPath}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="kind" Width="90">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Kind}" Style="{StaticResource CellDim}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="files" Width="70">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding FilesText}" Style="{StaticResource CellNum}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="size" Width="90">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding SizeText}" Style="{StaticResource CellNum}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="modified" Width="150">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding ModifiedText}"
+                                                       Style="{StaticResource CellDim}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </DockPanel>
+            </Grid>
+
+            <TextBlock Grid.Row="2" x:Name="Status" Style="{StaticResource Dim}" Margin="2,6,0,0"/>
+        </Grid>
+    </Grid>
+</UserControl>

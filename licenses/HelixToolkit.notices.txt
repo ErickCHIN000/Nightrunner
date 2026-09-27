@@ -1,0 +1,228 @@
+Helix Toolkit 3.1.2: third-party notices inside the shipped assemblies
+
+Source: https://github.com/helix-toolkit/helix-toolkit at tag v3.1.2 (commit 0d10a9fc27bbe06d4ce74c580612217af14d3fc6),
+the commit the HelixToolkit* 3.1.2 packages name. The Helix Toolkit licence is HelixToolkit.MIT.txt.
+psFXAA.hlsl is compiled to psFXAA.cso and embedded in HelixToolkit.SharpDX.dll.
+Each block below is copied verbatim from the upstream file named above it;
+only the ruled separator lines are added.
+
+----- Source/HelixToolkit.Maths/BoundingBox.cs (lines 1-31) -----
+/*
+The MIT License (MIT)
+Copyright (c) 2022 Helix Toolkit contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+ 
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+ 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+Original code from:
+SharpDX project. https://github.com/sharpdx/SharpDX
+SlimMath project. http://code.google.com/p/slimmath/
+
+Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
+The MIT License (MIT)
+Copyright (c) 2007-2011 SlimDX Group
+The MIT License (MIT)
+*/
+
+----- Source/HelixToolkit.SharpDX/Utilities/ImagePacker/ImagePacker.cs (lines 1-22) -----
+/*
+ * Copyright (c) 2018 HelixToolkit Contributors (MIT License)
+ * Modified from https://github.com/nickgravelyn/SpriteSheetPacker
+ * Copyright (c) 2009-2010 Nick Gravelyn (nick@gravelyn.com), Markus Ewald (cygon@nuclex.org)
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a 
+ * copy of this software and associated documentation files (the "Software"), 
+ * to deal in the Software without restriction, including without limitation 
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+ * and/or sell copies of the Software, and to permit persons to whom the Software 
+ * is furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all 
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+ * 
+
+----- Source/HelixToolkit/Collections/FastList.cs (lines 1-3) -----
+// Modified from xenko fast list
+// Copyright (c) Xenko contributors (https://xenko.com) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
+// Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
+
+----- Source/HelixToolkit.Native.ShaderBuilder/PS/psFXAA.hlsl (lines 6-38) -----
+//----------------------------------------------------------------------------------
+// File:        FXAA\media/FXAA.hlsl
+// SDK Version: v1.2 
+// Email:       gameworks@nvidia.com
+// Site:        http://developer.nvidia.com/
+//
+// Copyright (c) 2014, NVIDIA CORPORATION. All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+//  * Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+//  * Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+//  * Neither the name of NVIDIA CORPORATION nor the names of its
+//    contributors may be used to endorse or promote products derived
+//    from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
+// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+// PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+// OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+//----------------------------------------------------------------------------------
+
+----- Source/HelixToolkit.SharpDX/Utilities/ImportExport/CMOReader.cs (lines 1-77) -----
+/*
+The MIT License (MIT)
+Copyright (c) 2018 Helix Toolkit contributors
+*/
+// Port code from https://github.com/spazzarama/Direct3D-Rendering-Cookbook
+// And https://raw.githubusercontent.com/wiki/Microsoft/DirectXMesh/cmodump.cpp
+// Copyright (c) 2013 Justin Stenning
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// -----------------------------------------------------------------------------
+// Portions of code are ported from DirectXTk http://directxtk.codeplex.com
+// -----------------------------------------------------------------------------
+// Microsoft Public License (Ms-PL)
+//
+// This license governs use of the accompanying software. If you use the 
+// software, you accept this license. If you do not accept the license, do not
+// use the software.
+//
+// 1. Definitions
+// The terms "reproduce," "reproduction," "derivative works," and 
+// "distribution" have the same meaning here as under U.S. copyright law.
+// A "contribution" is the original software, or any additions or changes to 
+// the software.
+// A "contributor" is any person that distributes its contribution under this 
+// license.
+// "Licensed patents" are a contributor's patent claims that read directly on 
+// its contribution.
+//
+// 2. Grant of Rights
+// (A) Copyright Grant- Subject to the terms of this license, including the 
+// license conditions and limitations in section 3, each contributor grants 
+// you a non-exclusive, worldwide, royalty-free copyright license to reproduce
+// its contribution, prepare derivative works of its contribution, and 
+// distribute its contribution or any derivative works that you create.
+// (B) Patent Grant- Subject to the terms of this license, including the license
+// conditions and limitations in section 3, each contributor grants you a 
+// non-exclusive, worldwide, royalty-free license under its licensed patents to
+// make, have made, use, sell, offer for sale, import, and/or otherwise dispose
+// of its contribution in the software or derivative works of the contribution 
+// in the software.
+//
+// 3. Conditions and Limitations
+// (A) No Trademark License- This license does not grant you rights to use any 
+// contributors' name, logo, or trademarks.
+// (B) If you bring a patent claim against any contributor over patents that 
+// you claim are infringed by the software, your patent license from such 
+// contributor to the software ends automatically.
+// (C) If you distribute any portion of the software, you must retain all 
+// copyright, patent, trademark, and attribution notices that are present in the
+// software.
+// (D) If you distribute any portion of the software in source code form, you 
+// may do so only under this license by including a complete copy of this 
+// license with your distribution. If you distribute any portion of the software
+// in compiled or object code form, you may only do so under a license that 
+// complies with this license.
+// (E) The software is licensed "as-is." You bear the risk of using it. The
+// contributors give no express warranties, guarantees or conditions. You may
+// have additional consumer rights under your local laws which this license 
+// cannot change. To the extent permitted under your local laws, the 
+// contributors exclude the implied warranties of merchantability, fitness for a
+// particular purpose and non-infringement.
+
+----- Source/HelixToolkit.SharpDX/Model/Metadata.cs (lines 1-21) -----
+/*
+* Copyright (c) 2012-2018 AssimpNet - Nicholas Woodfield
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*/
+
+----- Source/HelixToolkit.Wpf.SharpDX/Controls/DPFCanvas.cs (lines 16-35) -----
+// ---- BASED ON ORIGNAL CODE FROM -----
+// Copyright (c) 2010-2012 SharpDX - Alexandre Mutel
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.

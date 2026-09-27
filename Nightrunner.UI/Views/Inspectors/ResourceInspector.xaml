@@ -1,0 +1,80 @@
+<UserControl x:Class="Nightrunner.UI.Views.Inspectors.ResourceInspector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource Bg}" Foreground="{StaticResource Fg}"
+             FontFamily="{StaticResource UiFont}" FontSize="{StaticResource UiSize}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="160" MinHeight="70"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="*" MinHeight="120"/>
+        </Grid.RowDefinitions>
+
+        <TextBox Grid.Row="0" x:Name="Detail" Style="{StaticResource Mono}" Height="132"
+                 TextWrapping="NoWrap" Margin="0,0,0,5"/>
+
+        <ListView Grid.Row="1" x:Name="Parts" SelectionChanged="Parts_SelectionChanged">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="#" Width="28">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding OrdinalText}" Style="{StaticResource CellNum}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="part" Width="146">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding TypeText}" Style="{StaticResource CellType}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="offset" Width="110">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding OffsetText}" Style="{StaticResource CellOffset}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="bytes" Width="88">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding BytesText}" Style="{StaticResource CellNum}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="m/c" Width="42">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding MethodText}" Style="{StaticResource CellNum}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="flags" Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FlagsText}" Foreground="{Binding FlagsBrush}"
+                                           FontFamily="{StaticResource MonoFont}" FontSize="12"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <GridSplitter Grid.Row="2" Height="5" HorizontalAlignment="Stretch"/>
+
+        <DockPanel Grid.Row="3">
+            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,3">
+                <Button DockPanel.Dock="Right" Content="more" Padding="9,2" Click="HexMore_Click"
+                        ToolTip="Load the next 4 KB of this part"/>
+                <Button DockPanel.Dock="Right" Content="save…" Padding="9,2" Margin="0,0,6,0"
+                        Click="SavePart_Click" ToolTip="Write this part's bytes to a file"/>
+                <TextBlock x:Name="HexHeader" Style="{StaticResource Dim}" Text="bytes"/>
+            </DockPanel>
+            <TextBox x:Name="Hex" Style="{StaticResource Mono}" TextWrapping="NoWrap"/>
+        </DockPanel>
+    </Grid>
+</UserControl>

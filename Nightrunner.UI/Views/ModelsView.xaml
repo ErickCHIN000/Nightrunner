@@ -1,0 +1,51 @@
+<UserControl x:Class="Nightrunner.UI.Views.ModelsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource Bg}" Foreground="{StaticResource Fg}"
+             FontFamily="{StaticResource UiFont}" FontSize="{StaticResource UiSize}">
+    <DockPanel Margin="8">
+        <TextBox DockPanel.Dock="Top" x:Name="Search" Margin="0,0,0,6" TextChanged="Search_TextChanged"
+                 ToolTip="Words must all match."/>
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+            <Label DockPanel.Dock="Left" Content="pak"/>
+            <ComboBox x:Name="PakFilter" SelectionChanged="PakFilter_Changed"/>
+        </DockPanel>
+        <TextBlock DockPanel.Dock="Bottom" x:Name="Status" Style="{StaticResource Dim}" Margin="2,6,0,0"/>
+        <ListView x:Name="Rows" SelectionChanged="Rows_SelectionChanged" SizeChanged="Rows_SizeChanged"
+                  SelectionMode="Extended"
+                  VirtualizingPanel.IsVirtualizing="True"
+                  VirtualizingPanel.VirtualizationMode="Recycling"
+                  VirtualizingPanel.ScrollUnit="Item">
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Export..." Click="Export_Click"
+                              ToolTip="The .model, one Cast + glb of the whole model, each drawn mesh, textures and .mat"/>
+                    <MenuItem Header="Add to project" Click="AddToProject_Click"
+                              ToolTip="The .model into the project, to edit its slots and materials"/>
+                    <MenuItem Header="Edit as scene" Click="AddScene_Click"
+                              ToolTip="The whole model as one Cast + glb in the project; edit it, the build splits it back per mesh"/>
+                    <MenuItem Header="Copy name" Click="CopyName_Click"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn x:Name="ColName" Header="name" Width="300">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Basename}" Style="{StaticResource CellName}"
+                                           Opacity="{Binding Opacity}" ToolTip="{Binding Tip}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="pak" Width="110">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Pak}" Style="{StaticResource CellDim}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </DockPanel>
+</UserControl>

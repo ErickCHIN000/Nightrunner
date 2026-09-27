@@ -1,0 +1,158 @@
+<UserControl x:Class="Nightrunner.UI.Views.ModsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource Bg}" Foreground="{StaticResource Fg}"
+             FontFamily="{StaticResource UiFont}" FontSize="{StaticResource UiSize}">
+    <DockPanel Margin="8">
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+            <Button DockPanel.Dock="Right" Content="Reload" Padding="10,3" Margin="6,0,0,0" Click="Reload_Click"/>
+            <Button DockPanel.Dock="Right" x:Name="OpenButton" Content="Open" Padding="10,3" Margin="6,0,0,0"
+                    Click="Open_Click" ToolTip="The mod's folder in Explorer"/>
+            <TextBlock x:Name="Runtime" VerticalAlignment="Center" FontFamily="{StaticResource MonoFont}" FontSize="12"
+                       TextTrimming="CharacterEllipsis"/>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Bottom" Margin="2,6,0,0">
+            <TextBlock DockPanel.Dock="Right" x:Name="Note" FontSize="12" Margin="12,0,0,0" TextTrimming="CharacterEllipsis"/>
+            <TextBlock x:Name="Status" Style="{StaticResource Dim}"/>
+        </DockPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" MinHeight="80"/>
+                <RowDefinition Height="6"/>
+                <RowDefinition Height="1.4*" MinHeight="80"/>
+            </Grid.RowDefinitions>
+            <ListView x:Name="ModList" Grid.Row="0" SelectionMode="Single" SelectionChanged="ModList_SelectionChanged">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="order" Width="52">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate><TextBlock Text="{Binding Order}" Style="{StaticResource CellNum}"/></DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="id" Width="170">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate><TextBlock Text="{Binding Id}" Style="{StaticResource CellName}" Opacity="{Binding Opacity}"
+                                                         ToolTip="{Binding Folder}"/></DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="name" Width="190">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate><TextBlock Text="{Binding Name}" Style="{StaticResource CellDim}"/></DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="version" Width="64">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate><TextBlock Text="{Binding Version}" Style="{StaticResource CellDim}"/></DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="author" Width="90">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate><TextBlock Text="{Binding Author}" Style="{StaticResource CellDim}"/></DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="on" Width="40">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate><CheckBox IsChecked="{Binding Enabled, Mode=OneWay}" IsEnabled="{Binding CanSwitch}"
+                                                        ToolTip="{Binding SwitchTip}" ToolTipService.ShowOnDisabled="True"
+                                                        Click="Switch_Click" VerticalAlignment="Center"/></DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="loads" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate><TextBlock Text="{Binding Loads}" Foreground="{Binding LoadsBrush}" FontSize="12"/></DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="valid" Width="56">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate><TextBlock Text="{Binding Valid}" Foreground="{Binding ValidBrush}" FontSize="12"
+                                                         ToolTip="{Binding Mod.Invalid}"/></DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="overrides" Width="72">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate><TextBlock Text="{Binding OverrideCount}" Style="{StaticResource CellNum}"/></DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource Line}"/>
+            <TabControl Grid.Row="2" x:Name="Tabs">
+                <TabItem Header="Items">
+                    <ListView x:Name="ItemList" SelectionMode="Single">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="kind" Width="52">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate><TextBlock Text="{Binding Kind}" Style="{StaticResource CellType}"/></DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="file" Width="240">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate><TextBlock Text="{Binding File}" Style="{StaticResource CellName}"/></DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="at" Width="170">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate><TextBlock Text="{Binding At}" Style="{StaticResource CellDim}"/></DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="loads" Width="200">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate><TextBlock Text="{Binding Loads}" Foreground="{Binding LoadsBrush}" FontSize="12"
+                                                                 ToolTip="{Binding Loads}"/></DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="path" Width="420">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate><TextBlock Text="{Binding Path}" Style="{StaticResource CellDim}" ToolTip="{Binding Path}"/></DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </TabItem>
+                <TabItem Header="Overrides">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,4">
+                            <Button Content="Raw" Padding="10,2" Margin="0,0,6,0" Click="ShowRaw_Click"/>
+                            <Button x:Name="MeshesButton" Content="Meshes" Padding="10,2" Margin="0,0,6,0" Click="ShowMeshes_Click"/>
+                            <Button x:Name="ModelsButton" Content="Models" Padding="10,2" Margin="0,0,6,0" Click="ShowModels_Click"/>
+                        </StackPanel>
+                        <ListView x:Name="OverrideList" SelectionMode="Single" SelectionChanged="OverrideList_SelectionChanged"
+                                  MouseDoubleClick="OverrideList_DoubleClick"
+                                  VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="type" Width="120">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate><TextBlock Text="{Binding Type}" Style="{StaticResource CellType}"/></DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="name" Width="330">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate><TextBlock Text="{Binding Name}" Style="{StaticResource CellName}" ToolTip="{Binding Name}"/></DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="file" Width="220">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate><TextBlock Text="{Binding File}" Style="{StaticResource CellDim}"/></DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="stock" Width="220">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate><TextBlock Text="{Binding Stock}" Style="{StaticResource CellDim}"/></DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </DockPanel>
+                </TabItem>
+                <TabItem Header="Problems">
+                    <ListBox x:Name="ProblemList" Style="{StaticResource PlainList}" FontSize="12"/>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </DockPanel>
+</UserControl>

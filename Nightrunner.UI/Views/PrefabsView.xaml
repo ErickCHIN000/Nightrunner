@@ -1,0 +1,53 @@
+<UserControl x:Class="Nightrunner.UI.Views.PrefabsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource Bg}" Foreground="{StaticResource Fg}"
+             FontFamily="{StaticResource UiFont}" FontSize="{StaticResource UiSize}">
+    <DockPanel Margin="8">
+        <TextBox DockPanel.Dock="Top" x:Name="Search" Margin="0,0,0,6" TextChanged="Search_TextChanged"
+                 ToolTip="Words must all match."/>
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+            <Label DockPanel.Dock="Left" Content="source"/>
+            <ComboBox x:Name="PackFilter" SelectionChanged="PackFilter_Changed"/>
+        </DockPanel>
+        <TextBlock DockPanel.Dock="Bottom" x:Name="Status" Style="{StaticResource Dim}" Margin="2,6,0,0"/>
+        <ListView x:Name="Rows" SelectionChanged="Rows_SelectionChanged" SizeChanged="Rows_SizeChanged"
+                  SelectionMode="Single"
+                  VirtualizingPanel.IsVirtualizing="True"
+                  VirtualizingPanel.VirtualizationMode="Recycling"
+                  VirtualizingPanel.ScrollUnit="Item">
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Copy name" Click="CopyName_Click"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn x:Name="ColName" Header="prefab" Width="280">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" Style="{StaticResource CellName}"
+                                           Opacity="{Binding Opacity}" ToolTip="{Binding Tip}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="source" Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Pack}" Style="{StaticResource CellDim}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="parts" Width="50">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Components}" Style="{StaticResource CellNum}"
+                                           ToolTip="components (child entities included)"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </DockPanel>
+</UserControl>

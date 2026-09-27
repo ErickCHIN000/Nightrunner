@@ -1,0 +1,75 @@
+<UserControl x:Class="Nightrunner.UI.Views.MaterialsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="{StaticResource Bg}" Foreground="{StaticResource Fg}"
+             FontFamily="{StaticResource UiFont}" FontSize="{StaticResource UiSize}">
+
+    <DockPanel Margin="8">
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+            <ComboBox DockPanel.Dock="Right" x:Name="PresetFilter" Width="190"
+                      SelectionChanged="PresetFilter_Changed"
+                      ToolTip="Show only the materials using one preset"/>
+            <TextBox x:Name="Search" Margin="0,0,8,0"
+                     TextChanged="Search_TextChanged"
+                     ToolTip="Words must all match. #123 matches a material index."/>
+        </DockPanel>
+
+        <TextBlock DockPanel.Dock="Bottom" x:Name="Status" Style="{StaticResource Dim}" Margin="2,6,0,0"/>
+
+        <Grid>
+            <ListView x:Name="Rows" SelectionChanged="Rows_SelectionChanged" SizeChanged="Rows_SizeChanged"
+                      VirtualizingPanel.IsVirtualizing="True"
+                      VirtualizingPanel.VirtualizationMode="Recycling"
+                      VirtualizingPanel.ScrollUnit="Item"
+                      ScrollViewer.IsDeferredScrollingEnabled="False">
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Export .mat..." Click="ExportMat_Click"
+                                  ToolTip="The selected materials as .mat text, from the shader database"/>
+                        <MenuItem Header="Export all .mat..." Click="ExportAllMat_Click"
+                                  ToolTip="Every material in the list (search and preset filter apply)"/>
+                        <Separator/>
+                        <MenuItem Header="Add its textures to project" Click="AddTextures_Click"/>
+                        <Separator/>
+                        <MenuItem Header="Copy name" Click="CopyName_Click"/>
+                        <MenuItem Header="Copy texture names" Click="CopyTextures_Click"/>
+                    </ContextMenu>
+                </ListView.ContextMenu>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn x:Name="ColName" Header="material" Width="300">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" Style="{StaticResource CellName}"
+                                               ToolTip="{Binding Name}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="preset" Width="190">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Preset}" Style="{StaticResource CellType}"
+                                               ToolTip="{Binding Preset}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="#" Width="64">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding IndexText}" Style="{StaticResource CellNum}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+            <TextBlock x:Name="Note" Style="{StaticResource Dim}" HorizontalAlignment="Center"
+                       VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="360" TextAlignment="Center"
+                       Visibility="Collapsed"/>
+        </Grid>
+    </DockPanel>
+</UserControl>

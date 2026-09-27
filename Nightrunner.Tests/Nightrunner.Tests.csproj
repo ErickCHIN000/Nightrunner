@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <!-- OptIn/: historical cross-checks against the Python prototype and a manual Blender smoke test. They need Python,
+       the prototype checkout or hand-made files, so they are not compiled (and so neither run nor listed) unless asked:
+       dotnet test -p:OptInTests=true (tools/parity/README.md). -->
+  <ItemGroup Condition="'$(OptInTests)' != 'true'">
+    <Compile Remove="OptIn/**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nightrunner.Core\Nightrunner.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- BuildCheck's edited scenes, frozen by MeshBuildTests.EditedBuildsAreFrozen -->
+    <Compile Include="..\tools\BuildCheck\MeshBuildVariants.cs" Link="Shared\MeshBuildVariants.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="4.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="xunit.v3" Version="4.0.1" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,19 @@
+BCnEncoder.NET 2.3.0: third-party notice inside the shipped assembly
+
+Source: https://github.com/Nominom/BCnEncoder.NET at tag RELEASE-2.3.0 (commit 51d3199b3bc374e0bdda3947d9f347cb6235a9a0).
+The BCnEncoder.NET licence is BCnEncoder.NET.MIT.txt.
+Each block below is copied verbatim from the upstream file named above it;
+only the ruled separator lines are added.
+
+----- BCnEnc.Net/Shared/MathHelper.cs (lines 11-21) -----
+		// FrExp modified to C# from http://www.netlib.org
+		/* @(#)fdlibm.h 1.5 04/04/22 */
+		/*
+		 * ====================================================
+		 * Copyright (C) 2004 by Sun Microsystems, Inc. All rights reserved.
+		 *
+		 * Permission to use, copy, modify, and distribute this
+		 * software is freely granted, provided that this notice 
+		 * is preserved.
+		 * ====================================================
+		 */

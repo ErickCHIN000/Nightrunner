@@ -1,0 +1,13 @@
+<Solution>
+  <Project Path="Nightrunner.Core/Nightrunner.Core.csproj" />
+  <Project Path="Nightrunner.Tests/Nightrunner.Tests.csproj" />
+  <Project Path="Nightrunner.UI/Nightrunner.UI.csproj" />
+  <Project Path="tools/AnimBankCheck/AnimBankCheck.csproj" />
+  <Project Path="tools/AnimCheck/AnimCheck.csproj" />
+  <Project Path="tools/BuildCheck/BuildCheck.csproj" />
+  <Project Path="tools/ExportCheck/ExportCheck.csproj" />
+  <Project Path="tools/MeshCheck/MeshCheck.csproj" />
+  <Project Path="tools/PrefabCheck/PrefabCheck.csproj" />
+  <Project Path="tools/RpackCheck/RpackCheck.csproj" />
+  <Project Path="tools/SdbCheck/SdbCheck.csproj" />
+</Solution>

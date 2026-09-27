@@ -1,0 +1,148 @@
+<UserControl x:Class="Nightrunner.UI.Views.RawExplorerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="{StaticResource Bg}" Foreground="{StaticResource Fg}"
+             FontFamily="{StaticResource UiFont}" FontSize="{StaticResource UiSize}">
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- toolbar -->
+        <DockPanel Grid.Row="0" LastChildFill="True" Margin="0,0,0,8">
+            <Button DockPanel.Dock="Left" Content="Add packs" Click="AddPacks_Click" Margin="0,0,12,0"/>
+            <ComboBox DockPanel.Dock="Right" x:Name="TypeFilter" Width="230"
+                      SelectionChanged="TypeFilter_Changed"/>
+            <Label DockPanel.Dock="Right" Content="type"/>
+            <TextBox x:Name="Search" Margin="0,0,12,0" TextChanged="Search_TextChanged"
+                     ToolTip="Words must all match (case-insensitive substring). #123 matches logical index 123. Ctrl+F focuses here."/>
+        </DockPanel>
+
+        <!-- packs | resources | details -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="240" MinWidth="140"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*" MinWidth="380"/>
+            </Grid.ColumnDefinitions>
+
+            <DockPanel Grid.Column="0">
+                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,4">
+                    <Button DockPanel.Dock="Right" Content="all" Padding="9,2" Click="ClearPackFilter_Click"/>
+                    <TextBlock x:Name="PackHeader" Style="{StaticResource Dim}" Text="packs"/>
+                </DockPanel>
+                <ListBox x:Name="PackList" Style="{StaticResource PlainList}" SelectionMode="Extended"
+                         SelectionChanged="PackList_SelectionChanged"
+                         ContextMenuOpening="PackMenu_Opening"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Open in Explorer" Click="PackReveal_Click"/>
+                            <MenuItem Header="Export pack to folder..." Click="PackExport_Click"/>
+                            <Separator/>
+                            <MenuItem Header="Add pack to project" Click="PackToProject_Click"/>
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis"
+                                           Foreground="{StaticResource FgBright}" ToolTip="{Binding Path}"/>
+                                <TextBlock Text="{Binding Summary}" FontSize="11.5"
+                                           Foreground="{Binding SummaryBrush}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+
+            <ListView Grid.Column="2" x:Name="Rows" SelectionMode="Extended" SizeChanged="Rows_SizeChanged"
+                      SelectionChanged="Rows_SelectionChanged"
+                      VirtualizingPanel.IsVirtualizing="True"
+                      VirtualizingPanel.VirtualizationMode="Recycling"
+                      VirtualizingPanel.ScrollUnit="Item"
+                      VirtualizingPanel.CacheLength="2,2"
+                      VirtualizingPanel.CacheLengthUnit="Page"
+                      ScrollViewer.IsDeferredScrollingEnabled="False">
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Export selected to folder..." Click="RowsExport_Click"/>
+                        <MenuItem Header="Add selected to project" Click="RowsToProject_Click"/>
+                        <Separator/>
+                        <MenuItem Header="Open containing pack in Explorer" Click="RowsReveal_Click"/>
+                        <MenuItem Header="Copy name" Click="RowsCopyName_Click"/>
+                    </ContextMenu>
+                </ListView.ContextMenu>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn x:Name="ColName" Header="name" Width="300">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" Style="{StaticResource CellName}" ToolTip="{Binding Name}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="type" Width="142">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding TypeLabel}" Style="{StaticResource CellType}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="index" Width="66">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding IndexText}" Style="{StaticResource CellNum}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="parts" Width="48">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding PartsText}" Style="{StaticResource CellNum}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="size" Width="78">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding SizeText}" Style="{StaticResource CellNum}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="offset" Width="104">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding OffsetText}" Style="{StaticResource CellOffset}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="pack" Width="170">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding PackLabel}" Style="{StaticResource CellDim}" ToolTip="{Binding PackLabel}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+        </Grid>
+
+        <!-- status -->
+        <DockPanel Grid.Row="2" Margin="2,8,2,0">
+            <TextBlock DockPanel.Dock="Right" x:Name="Timing" Foreground="{DynamicResource Accent}"
+                       FontFamily="{StaticResource MonoFont}" FontSize="12"/>
+            <TextBlock x:Name="Status" Style="{StaticResource Dim}" Text="starting"/>
+        </DockPanel>
+    </Grid>
+</UserControl>

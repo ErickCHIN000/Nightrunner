@@ -1,0 +1,134 @@
+NAudio.Core / NAudio.Wasapi 3.1.0: third-party notices and attributions inside the assemblies
+
+Source: https://github.com/naudio/NAudio at tag v3.1.0 (commit 0aaef29d04bec9567bdf2f669036fabecc33a2e2).
+The Ray Molenkamp block heads 17 files under src/NAudio.Wasapi/CoreAudioApi (16 identical, one variant).
+The NAudio licence is NAudio.MIT.txt.
+Each block below is copied verbatim from the upstream file named above it;
+only the ruled separator lines are added.
+
+----- src/NAudio.Core/Codecs/G722Codec.cs (lines 5-24) -----
+/// <summary>
+/// SpanDSP - a series of DSP components for telephony
+/// 
+/// g722_decode.c - The ITU G.722 codec, decode part.
+/// 
+/// Written by Steve Underwood &lt;steveu@coppice.org&gt;
+/// 
+/// Copyright (C) 2005 Steve Underwood
+/// Ported to C# by Mark Heath 2011
+/// 
+/// Despite my general liking of the GPL, I place my own contributions 
+/// to this code in the public domain for the benefit of all mankind -
+/// even the slimy ones who might try to proprietize my work and use it
+/// to my detriment.
+///  
+/// Based in part on a single channel G.722 codec which is:
+/// Copyright (c) CMU 1993
+/// Computer Science, Speech Group
+/// Chengxiang Lu and Alex Hauptmann
+/// </summary>
+
+----- src/NAudio.Core/Dsp/SmbPitchShifter.cs (lines 6-49) -----
+/****************************************************************************
+        *
+        * NAME: PitchShift.cs
+        * VERSION: 1.0
+        * HOME URL: http://www.dspdimension.com
+        * KNOWN BUGS: none
+        *
+        * SYNOPSIS: Routine for doing pitch shifting while maintaining
+        * duration using the Short Time Fourier Transform.
+        *
+        * DESCRIPTION: The routine takes a pitchShift factor value which is between 0.5
+        * (one octave down) and 2. (one octave up). A value of exactly 1 does not change
+        * the pitch. numSampsToProcess tells the routine how many samples in indata[0...
+        * numSampsToProcess-1] should be pitch shifted and moved to outdata[0 ...
+        * numSampsToProcess-1]. The two buffers can be identical (ie. it can process the
+        * data in-place). fftFrameSize defines the FFT frame size used for the
+        * processing. Typical values are 1024, 2048 and 4096. It may be any value <=
+        * MAX_FRAME_LENGTH but it MUST be a power of 2. osamp is the STFT
+        * oversampling factor which also determines the overlap between adjacent STFT
+        * frames. It should at least be 4 for moderate scaling ratios. A value of 32 is
+        * recommended for best quality. sampleRate takes the sample rate for the signal 
+        * in unit Hz, ie. 44100 for 44.1 kHz audio. The data passed to the routine in 
+        * indata[] should be in the range [-1.0, 1.0), which is also the output range 
+        * for the data, make sure you scale the data accordingly (for 16bit signed integers
+        * you would have to divide (and multiply) by 32768). 
+        *
+        * COPYRIGHT 1999-2006 Stephan M. Bernsee <smb [AT] dspdimension [DOT] com>
+        *
+        * 						The Wide Open License (WOL)
+        *
+        * Permission to use, copy, modify, distribute and sell this software and its
+        * documentation for any purpose is hereby granted without fee, provided that
+        * the above copyright notice and this license appear in all source copies. 
+        * THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY OF
+        * ANY KIND. See http://www.dspguru.com/wol.htm for more information.
+        *
+        *****************************************************************************/
+
+/****************************************************************************
+*
+* This code was converted to C# by Michael Knight
+* madmik3 at gmail dot com. 
+* http://sites.google.com/site/mikescoderama/
+*
+
+----- src/NAudio.Core/Dsp/WdlResampler.cs (lines 1-22) -----
+// This class based on the Resampler that is part of Cockos WDL
+// originally written in C++ and ported to C# for NAudio by Mark Heath
+// Used in NAudio with permission from Justin Frankel
+// Original WDL License:
+//     Copyright (C) 2005 and later Cockos Incorporated
+//     
+//     Portions copyright other contributors, see each source file for more information
+// 
+//     This software is provided 'as-is', without any express or implied
+//     warranty.  In no event will the authors be held liable for any damages
+//     arising from the use of this software.
+// 
+//     Permission is granted to anyone to use this software for any purpose,
+//     including commercial applications, and to alter it and redistribute it
+//     freely, subject to the following restrictions:
+// 
+//     1. The origin of this software must not be misrepresented; you must not
+//        claim that you wrote the original software. If you use this software
+//        in a product, an acknowledgment in the product documentation would be
+//        appreciated but is not required.
+//     2. Altered source versions must be plainly marked as such, and must not be
+//        misrepresented as being the original software.
+
+----- src/NAudio.Wasapi/CoreAudioApi/DeviceState.cs (lines 1-20) -----
+/*
+  LICENSE
+  -------
+  Copyright (C) 2007 Ray Molenkamp
+
+  This source code is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this source code or the software it produces.
+
+  Permission is granted to anyone to use this source code for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this source code must not be misrepresented; you must not
+     claim that you wrote the original source code.  If you use this source code
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original source code.
+  3. This notice may not be removed or altered from any source distribution.
+
+----- src/NAudio.Core/Codecs/ALawDecoder.cs (lines 7-8) -----
+/// based on code from:
+/// http://hazelware.luggle.com/tutorials/mulawcompression.html
+
+----- src/NAudio.Core/Dsp/BiQuadFilter.cs (lines 1-3) -----
+// based on Cookbook formulae for audio EQ biquad filter coefficients
+// http://www.musicdsp.org/files/Audio-EQ-Cookbook.txt
+// by Robert Bristow-Johnson  <rbj@audioimagination.com>
+
+----- src/NAudio.Core/Dsp/EnvelopeGenerator.cs (lines 5-6) -----
+// C# ADSR based on work by Nigel Redmon, EarLevel Engineering: earlevel.com
+// http://www.earlevel.com/main/2013/06/03/envelope-generators-adsr-code/

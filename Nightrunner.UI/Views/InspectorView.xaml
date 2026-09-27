@@ -1,0 +1,25 @@
+<UserControl x:Class="Nightrunner.UI.Views.InspectorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="{StaticResource Bg}" Foreground="{StaticResource Fg}"
+             FontFamily="{StaticResource UiFont}" FontSize="{StaticResource UiSize}">
+    <DockPanel Margin="8">
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+            <Border DockPanel.Dock="Left" Width="4" Height="16" Background="{DynamicResource Accent}"
+                    Margin="0,0,8,0"/>
+            <TextBlock DockPanel.Dock="Right" x:Name="Origin" Style="{StaticResource Dim}" FontSize="11.5"/>
+            <TextBlock x:Name="Kind" Text="nothing selected" Foreground="{StaticResource FgBright}"
+                       FontWeight="SemiBold"/>
+        </DockPanel>
+
+        <Grid>
+            <ContentControl x:Name="Host"/>
+            <TextBlock x:Name="Empty" Style="{StaticResource Dim}" HorizontalAlignment="Center"
+                       VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="320" TextAlignment="Center"
+                       Text="Pick a pack, a resource, a texture, a material or a project — whatever it is shows up here."/>
+        </Grid>
+    </DockPanel>
+</UserControl>

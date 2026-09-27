@@ -1,0 +1,116 @@
+vgmstream (libvgmstream.dll): embedded code with notices beyond COPYING
+
+Source: https://github.com/vgmstream/vgmstream at commit 95cff213b1b1fbd292c313270cc679f02a1e624d.
+src/CMakeLists.txt globs every .c file under src/, src/coding/libs and src/util, so all of these are
+compiled into libvgmstream.dll whatever codecs are enabled. The vgmstream licence is vgmstream.COPYING.txt.
+See THIRD_PARTY_NOTICES.md: the relic_mixfft terms and the ERISA-Library terms are unresolved.
+Each block below is copied verbatim from the upstream file named above it;
+only the ruled separator lines are added.
+
+----- src/util/miniz.c (lines 2-26) -----
+/**************************************************************************
+ *
+ * Copyright 2013-2014 RAD Game Tools and Valve Software
+ * Copyright 2010-2014 Rich Geldreich and Tenacious Software LLC
+ * All Rights Reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ **************************************************************************/
+
+----- src/coding/libs/maac.h (lines 14968-14983) -----
+/*
+
+Copyright (c) 2026 John Regan
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+
+*/
+
+----- src/coding/libs/relic_mixfft.c (lines 1-4) -----
+/* Original Relic code uses mixfft.c v1 by Jens Jorgen Nielsen, though was
+ * modified to use floats instead of doubles. This is a 100% decompilation
+ * that somehow resulted in the exact same code (no compiler optims set?), 
+ * so restores comments back but removes/cleans globals (could be simplified). */
+
+----- src/coding/libs/relic_mixfft.c (lines 13-41) -----
+/************************************************************************
+  fft(int n, double xRe[], double xIm[], double yRe[], double yIm[])
+ ------------------------------------------------------------------------
+  NOTE : This is copyrighted material, Not public domain. See below.
+ ------------------------------------------------------------------------
+  Input/output:
+      int n          transformation length.
+      double xRe[]   real part of input sequence.
+      double xIm[]   imaginary part of input sequence.
+      double yRe[]   real part of output sequence.
+      double yIm[]   imaginary part of output sequence.
+ ------------------------------------------------------------------------
+  Function:
+      The procedure performs a fast discrete Fourier transform (FFT) of
+      a complex sequence, x, of an arbitrary length, n. The output, y,
+      is also a complex sequence of length n.
+
+      y[k] = sum(x[m]*exp(-i*2*pi*k*m/n), m=0..(n-1)), k=0,...,(n-1)
+
+      The largest prime factor of n must be less than or equal to the
+      constant maxPrimeFactor defined below.
+ ------------------------------------------------------------------------
+  Author:
+      Jens Joergen Nielsen            For non-commercial use only.
+      Bakkehusene 54                  A $100 fee must be paid if used
+      DK-2970 Hoersholm               commercially. Please contact.
+      DENMARK
+
+      E-mail : jjn@get2net.dk   All rights reserved. October 2000.
+
+----- src/coding/mio_decoder.c (lines 7-11) -----
+/* Decodes MIO ("Music Interleaved and Orthogonal transformed") audio files.
+ * Adapted to C from original C++ lib source by Leshade Entis: 
+ * - http://www.entis.jp/eridev/download/
+ * - http://www.amatsukami.jp/entis/bin/erinalib.lzh
+ * (licensed under a custom license somewhat equivalent to GPL).
+
+----- src/coding/libs/mio_erisasound.c (lines 1-5) -----
+/*****************************************************************************
+                         E R I S A - L i b r a r y
+ -----------------------------------------------------------------------------
+    Copyright (C) 2002-2003 Leshade Entis, Entis-soft. All rights reserved.
+ *****************************************************************************/
+
+----- src/coding/vorbis_custom_utils_wwise.c (line 320) -----
+/* The following code was mostly and manually converted from hcs's ww2ogg (https://github.com/hcs64/ww2ogg).
+
+----- src/coding/libs/vorbis_codebooks_wwise.h (lines 6-13) -----
+ * Codebook data for Wwise Vorbis converted to c-arrays.
+ * Extracted from Wwise SDK by ww2ogg. The originals have all codebooks together with an index table at the end.
+ * Here each codebook is an array instead, and the index is converted to a list.
+ *
+ * aoTuV_603 codebooks were introduced in later versions, very similar with reordered standard ones and
+ * a few new ones, so there are 2 lists (reused here to save some kbs).
+ */
