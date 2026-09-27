@@ -1,3 +1,4 @@
+using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using Nightrunner.Core.Audio;
 
@@ -6,13 +7,17 @@ namespace Nightrunner.UI;
 internal sealed class AudioPlaybackSession : IDisposable
 {
     private readonly VgmstreamDecoder _decoder;
+    private readonly MMDevice _device;
     private readonly WasapiPlayer _output;
+    private bool _pausedAfterSeek;
     private bool _disposed;
 
     public Exception? Error { get; private set; }
     public TimeSpan Duration => _decoder.Duration;
     public TimeSpan Position => _decoder.Position;
-    public PlaybackState State => _output.PlaybackState;
+
+    /// <summary>A seek flushes the output, which leaves it stopped; a seek made while paused stays paused.</summary>
+    public PlaybackState State => _pausedAfterSeek ? PlaybackState.Paused : _output.PlaybackState;
 
     public float Volume
     {
@@ -23,21 +28,28 @@ internal sealed class AudioPlaybackSession : IDisposable
     public AudioPlaybackSession(VgmstreamDecoder decoder, float volume)
     {
         _decoder = decoder;
+        MMDevice? device = null;
         WasapiPlayer? output = null;
         try
         {
-            output = new WasapiPlayerBuilder().Build();
+            // The session owns the device: a player the builder gives a device of its own never releases it, and the
+            // volume's session objects on that device kept audio threads alive after every played sound.
+            using (var devices = new MMDeviceEnumerator())
+                device = devices.GetDefaultAudioEndpoint(DataFlow.Render, Role.Console);
+            output = new WasapiPlayerBuilder().WithDevice(device).Build();
             output.PlaybackStopped += (_, e) =>
             {
                 if (e.Exception is not null) Error = e.Exception;
             };
             output.Init(new DecoderWaveProvider(decoder));
+            _device = device;
             _output = output;
             Volume = volume;
         }
         catch
         {
             output?.Dispose();
+            device?.Dispose();
             decoder.Dispose();
             throw;
         }
@@ -46,15 +58,21 @@ internal sealed class AudioPlaybackSession : IDisposable
     public void Play()
     {
         Error = null;
+        _pausedAfterSeek = false;
         if (_decoder.Position >= _decoder.Duration)
             _decoder.Seek(TimeSpan.Zero);
         _output.Play();
     }
 
-    public void Pause() => _output.Pause();
+    public void Pause()
+    {
+        if (_pausedAfterSeek) return;
+        _output.Pause();
+    }
 
     public void Stop()
     {
+        _pausedAfterSeek = false;
         _output.Stop();
         _decoder.Seek(TimeSpan.Zero);
     }
@@ -62,11 +80,12 @@ internal sealed class AudioPlaybackSession : IDisposable
     public void Seek(TimeSpan position)
     {
         Error = null;
-        bool playing = _output.PlaybackState == PlaybackState.Playing;
+        var state = State;
         // Flush queued WASAPI samples before moving the decoder.
         _output.Stop();
         _decoder.Seek(position);
-        if (playing) _output.Play();
+        _pausedAfterSeek = state == PlaybackState.Paused;
+        if (state == PlaybackState.Playing) _output.Play();
     }
 
     public void Dispose()
@@ -74,6 +93,7 @@ internal sealed class AudioPlaybackSession : IDisposable
         if (_disposed) return;
         _disposed = true;
         _output.Dispose();
+        _device.Dispose();
         _decoder.Dispose();
     }
 

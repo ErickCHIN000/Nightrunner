@@ -7,9 +7,10 @@ namespace Nightrunner.Core.Audio;
 
 public enum AespEntryKind { LooseWem, BankWem }
 
-public sealed record AespSource(string Path, string RelativePath, string Language, bool IsCustom);
+public sealed record AespSource(string Path, string RelativePath, string Language);
 
-public sealed record AespArchive(int Id, AespSource Source, string HeaderName, ulong Priority,
+/// <param name="Unknown98">The header's u64 at 0x98, kept raw: 0 in all 14 shipped archives (DLTB and DL2), meaning unknown.</param>
+public sealed record AespArchive(int Id, AespSource Source, string HeaderName, ulong Unknown98,
                                  long FileLength, long TableOffset, int FirstEntry, int EntryCount,
                                  int TableRowCount, string? Error)
 {
@@ -48,20 +49,21 @@ public sealed class AespCatalog
     public IReadOnlyList<AespAsset> NameAssets => _nameAssets;
     public int ErrorCount => _archives.Count(a => a.Error is not null);
 
-    public static AespCatalog Scan(GameInstall install, bool includeCustom = false, CancellationToken ct = default) =>
-        ScanSources(FindSources(install, includeCustom), ct);
+    public static AespCatalog Scan(GameInstall install, CancellationToken ct = default) =>
+        ScanSources(FindSources(install), ct);
 
-    public static AespSource[] FindSources(GameInstall install, bool includeCustom = false)
+    /// <summary>
+    /// Every AESP under the audio folder (recursive, so an archive left in an old loader folder is just one more
+    /// archive, as packs are) and under each language pack. NightrunnerProxy does not load audio, so nothing comes
+    /// from its mods.
+    /// </summary>
+    public static AespSource[] FindSources(GameInstall install)
     {
         List<AespSource> found = [];
         if (install.Audio is { } audio && Directory.Exists(audio))
         {
             foreach (var path in Directory.EnumerateFiles(audio, "*.aesp", SearchOption.AllDirectories))
-            {
-                bool custom = install.Paths.IsCustom(path);
-                if (!custom || includeCustom)
-                    found.Add(new(path, Path.GetRelativePath(install.Root, path), "", custom));
-            }
+                found.Add(new(path, Path.GetRelativePath(install.Root, path), ""));
         }
 
         // Language packs keep their AESP files outside the main audio tree.
@@ -74,11 +76,11 @@ public sealed class AespCatalog
                 if (!Directory.Exists(languageAudio)) continue;
                 var language = Path.GetFileName(languageDir);
                 foreach (var path in Directory.EnumerateFiles(languageAudio, "*.aesp", SearchOption.AllDirectories))
-                    found.Add(new(path, Path.GetRelativePath(install.Root, path), language, false));
+                    found.Add(new(path, Path.GetRelativePath(install.Root, path), language));
             }
         }
 
-        return [.. found.OrderBy(s => s.IsCustom).ThenBy(s => s.RelativePath, StringComparer.OrdinalIgnoreCase)];
+        return [.. found.OrderBy(s => s.RelativePath, StringComparer.OrdinalIgnoreCase)];
     }
 
     public static AespCatalog ScanSources(IEnumerable<AespSource> sources, CancellationToken ct = default)
@@ -97,7 +99,7 @@ public sealed class AespCatalog
                 entries.AddRange(parsed.Entries);
                 nameAssets.AddRange(parsed.NameAssets);
                 warnings.AddRange(parsed.Warnings.Select(w => $"{source.RelativePath}: {w}"));
-                archives.Add(new(archives.Count, source, parsed.HeaderName, parsed.Priority,
+                archives.Add(new(archives.Count, source, parsed.HeaderName, parsed.Unknown98,
                                  parsed.Length, parsed.TableOffset, first, parsed.Entries.Length,
                                  parsed.TableRowCount, null));
             }
@@ -111,7 +113,7 @@ public sealed class AespCatalog
 
     private readonly record struct TableRow(int Index, string Name, ulong TableKey, long Offset, long Size, bool Numbered);
 
-    private static (string HeaderName, ulong Priority, long Length, long TableOffset,
+    private static (string HeaderName, ulong Unknown98, long Length, long TableOffset,
                     int TableRowCount, AespEntry[] Entries, string[] Warnings, AespAsset[] NameAssets)
         ReadTable(string path, int archiveId, CancellationToken ct)
     {
@@ -123,7 +125,11 @@ public sealed class AespCatalog
         file.ReadExactly(header);
         ulong table = BinaryPrimitives.ReadUInt64LittleEndian(header[0x88..]);
         ulong count = BinaryPrimitives.ReadUInt64LittleEndian(header[0x90..]);
-        ulong priority = BinaryPrimitives.ReadUInt64LittleEndian(header[0x98..]);
+        ulong unknown98 = BinaryPrimitives.ReadUInt64LittleEndian(header[0x98..]);
+        // The prototype reads the table offset as the u32 at 0xA0; both hold 0xB8 in all 14 shipped archives.
+        uint tableA0 = BinaryPrimitives.ReadUInt32LittleEndian(header[0xA0..]);
+        if (table != tableA0)
+            throw new AespFormatException($"AESP table offset fields disagree: 0x88 holds 0x{table:X}, 0xA0 holds 0x{tableA0:X}");
         if (table < HeaderSize || table > (ulong)length)
             throw new AespFormatException($"AESP table offset 0x{table:X} is outside the file");
         if (count > (ulong)MaxRowsPerArchive || count > ((ulong)length - table) / RowSize)
@@ -186,7 +192,7 @@ public sealed class AespCatalog
                 warnings.Add($"bank {item.Name}: {ex.Message}");
             }
         }
-        return (headerName, priority, length, (long)table, rows.Length, [.. entries], [.. warnings], [.. nameAssets]);
+        return (headerName, unknown98, length, (long)table, rows.Length, [.. entries], [.. warnings], [.. nameAssets]);
     }
 
     private static string DecodeName(ReadOnlySpan<byte> bytes)

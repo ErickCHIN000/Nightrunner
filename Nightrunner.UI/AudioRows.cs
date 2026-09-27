@@ -10,7 +10,7 @@ public sealed class AudioArchiveRow(AespArchive archive)
     public string Path => archive.Source.Path;
     public string Summary => archive.Error ??
         $"{archive.EntryCount:N0} WEM · {Format.Size(archive.FileLength)}" +
-        (archive.Source.Language.Length > 0 ? $" · {archive.Source.Language}" : archive.Source.IsCustom ? " · custom" : "");
+        (archive.Source.Language.Length > 0 ? $" · {archive.Source.Language}" : "");
     public System.Windows.Media.Brush SummaryBrush => Skin.Brush(archive.Error is null ? "FgDim" : "Error");
 }
 
@@ -25,7 +25,7 @@ public sealed class AudioEntryRow(AespCatalog catalog, int index, AudioNameIndex
     public string KindText => _entry.Kind == AespEntryKind.LooseWem ? "loose" : "bank";
     public string SizeText => Format.Size(_entry.Size);
     public string ArchiveLabel => _entry.BankName is null ? _archive.Label : $"{_entry.BankName} · {_archive.Label}";
-    public string LanguageText => _archive.Source.Language.Length > 0 ? _archive.Source.Language : _archive.Source.IsCustom ? "custom" : "";
+    public string LanguageText => _archive.Source.Language;
 }
 
 public sealed class AudioEntryRowList(AespCatalog catalog, int[] indices, AudioNameIndex? names) : IList, IReadOnlyList<AudioEntryRow>

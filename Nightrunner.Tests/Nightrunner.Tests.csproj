@@ -24,13 +24,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- BuildCheck's edited scenes, frozen by MeshBuildTests.EditedBuildsAreFrozen -->
-    <Compile Include="..\tools\BuildCheck\MeshBuildVariants.cs" Link="Shared\MeshBuildVariants.cs" />
+    <!-- the optional audio decoder, when built locally (tools/vgmstream): the decoding tests skip without it -->
+    <None Include="..\third_party\vgmstream\win-x64\*.dll" Link="%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\third_party\vgmstream\win-x64\*.dll" Link="%(Filename)%(Extension)"
-          CopyToOutputDirectory="PreserveNewest" />
+    <!-- BuildCheck's edited scenes, frozen by MeshBuildTests.EditedBuildsAreFrozen -->
+    <Compile Include="..\tools\BuildCheck\MeshBuildVariants.cs" Link="Shared\MeshBuildVariants.cs" />
   </ItemGroup>
 
   <ItemGroup>

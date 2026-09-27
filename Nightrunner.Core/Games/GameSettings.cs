@@ -57,13 +57,13 @@ public sealed class GameSettings
 
     public void Save()
     {
-        // the dock, runtime and build checks (NIGHTRUNNER_DOCKCHECK, NIGHTRUNNER_RUNTIMECHECK, NIGHTRUNNER_BUILDCHECK,
-        // NIGHTRUNNER_PROJECTSCHECK) never
-        // write the user's settings
+        // the dock, runtime, build, projects and audio checks (NIGHTRUNNER_DOCKCHECK, NIGHTRUNNER_RUNTIMECHECK,
+        // NIGHTRUNNER_BUILDCHECK, NIGHTRUNNER_PROJECTSCHECK, NIGHTRUNNER_AUDIOCHECK) never write the user's settings
         if (Environment.GetEnvironmentVariable("NIGHTRUNNER_DOCKCHECK") is { Length: > 0 } ||
             Environment.GetEnvironmentVariable("NIGHTRUNNER_RUNTIMECHECK") is { Length: > 0 } ||
             Environment.GetEnvironmentVariable("NIGHTRUNNER_BUILDCHECK") is { Length: > 0 } ||
-            Environment.GetEnvironmentVariable("NIGHTRUNNER_PROJECTSCHECK") is { Length: > 0 }) return;
+            Environment.GetEnvironmentVariable("NIGHTRUNNER_PROJECTSCHECK") is { Length: > 0 } ||
+            Environment.GetEnvironmentVariable("NIGHTRUNNER_AUDIOCHECK") is { Length: > 0 }) return;
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);

@@ -67,6 +67,7 @@ public partial class AudioExplorerView : UserControl
     {
         if (_ready) return;
         _ready = true;
+        if (!AudioDecoding.Status.Available) ShowNoDecoder();
         Rows_SizeChanged(Rows, null!);
         _ = ScanAsync();
     }
@@ -120,12 +121,11 @@ public partial class AudioExplorerView : UserControl
         }
         var cts = new CancellationTokenSource();
         _scanCts = cts;
-        bool custom = _workspace.RuntimeModding;
         Status.Text = "indexing audio";
         var clock = Stopwatch.StartNew();
         try
         {
-            var catalog = await Task.Run(() => AespCatalog.Scan(install, custom, cts.Token), cts.Token);
+            var catalog = await Task.Run(() => AespCatalog.Scan(install, cts.Token), cts.Token);
             if (cts.IsCancellationRequested || _detached || !ReferenceEquals(_scanCts, cts) ||
                 !ReferenceEquals(_workspace.Install, install)) return;
 
@@ -136,7 +136,8 @@ public partial class AudioExplorerView : UserControl
             ArchiveHeader.Text = $"archives ({visibleArchives.Length})";
             Status.Text = $"{catalog.Entries.Count:N0} WEMs" +
                           (catalog.ErrorCount > 0 ? $" · {catalog.ErrorCount} failed" : "") +
-                          (catalog.Warnings.Count > 0 ? $" · {catalog.Warnings.Count} bank warnings" : "");
+                          (catalog.Warnings.Count > 0 ? $" · {catalog.Warnings.Count} bank warnings" : "") +
+                          (AudioDecoding.Status.Available ? "" : " · no decoder");
             Status.Foreground = Skin.Brush(catalog.ErrorCount > 0 || catalog.Warnings.Count > 0 ? "Warn" : "FgDim");
             Timing.Text = $"{clock.Elapsed.TotalMilliseconds:0.#} ms";
             foreach (var archive in catalog.Archives.Where(a => a.Error is not null))
@@ -267,11 +268,13 @@ public partial class AudioExplorerView : UserControl
             item.IsSelected = true;
         }
         if (_catalog is null || Rows.SelectedItems.Count == 0) e.Handled = true;
+        ExportWavItem.IsEnabled = AudioDecoding.Status.Available;
     }
 
     private void Export_Click(object sender, RoutedEventArgs e)
     {
         if (_catalog is not { } catalog || sender is not MenuItem { Tag: string format }) return;
+        if (format == "wav" && !AudioDecoding.Status.Available) return;
         int[] indices = Rows.SelectedItems.Cast<AudioEntryRow>().Select(row => row.Index).ToArray();
         if (indices.Length == 0) return;
         var duplicateIds = indices.GroupBy(index => catalog.Entries[index].WemId)
@@ -372,6 +375,12 @@ public partial class AudioExplorerView : UserControl
     {
         var catalog = _catalog;
         if (catalog is null || _detached) return;
+        if (!AudioDecoding.Status.Available)
+        {
+            // Said once in the log when the decoder was checked; here only the player bar says it.
+            ShowNoDecoder();
+            return;
+        }
         _playerLoadCts?.Cancel();
         var cts = new CancellationTokenSource();
         _playerLoadCts = cts;
@@ -524,10 +533,17 @@ public partial class AudioExplorerView : UserControl
         PlayPauseButton.IsEnabled = false;
         PlayPauseButton.Content = "Play";
         StopButton.IsEnabled = false;
-        PlayerTitle.Text = "Double-click a WEM to play";
+        PlayerTitle.Text = "";
         PlayerStatus.Text = "ready";
         PlayerStatus.ToolTip = null;
         PlayerTime.Text = "0:00 / 0:00";
+        if (!AudioDecoding.Status.Available) ShowNoDecoder();
+    }
+
+    private void ShowNoDecoder()
+    {
+        PlayerStatus.Text = "no decoder";
+        PlayerStatus.ToolTip = AudioDecoding.Status.Reason;
     }
 
     private void Rows_SizeChanged(object sender, SizeChangedEventArgs e)

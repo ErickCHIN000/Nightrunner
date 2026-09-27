@@ -27,10 +27,11 @@
     <ProjectReference Include="..\Nightrunner.Core\Nightrunner.Core.csproj" />
   </ItemGroup>
 
-
+  <!-- the optional audio decoder, when built locally (tools/vgmstream): next to a dev build, never in a publish.
+       libvgmstream.dll compiles in code whose terms do not allow redistributing it with the app (third_party/vgmstream/README.md). -->
   <ItemGroup>
     <None Include="..\third_party\vgmstream\win-x64\*.dll" Link="%(Filename)%(Extension)"
-          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
   <ItemGroup>

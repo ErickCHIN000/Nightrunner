@@ -18,7 +18,7 @@ public class AespCatalogTests
             string archive = Path.Combine(dir.FullName, "source.aesp");
             byte[] wem = CreatePcmWem(2, 70_000);
             WriteFixture(archive, [("101", 101UL, wem), ("weapons_pre", 2UL, CreateBank(wem))]);
-            var catalog = AespCatalog.ScanSources([new AespSource(archive, "source.aesp", "", false)], ct);
+            var catalog = AespCatalog.ScanSources([new AespSource(archive, "source.aesp", "")], ct);
             Assert.Equal(2, catalog.Entries.Count);
 
             for (int i = 0; i < catalog.Entries.Count; i++)
@@ -48,6 +48,7 @@ public class AespCatalogTests
     [Fact]
     public void WavExportKeepsAllFourPcmChannels()
     {
+        VgmstreamDecoderTests.RequireDecoder();
         var dir = Directory.CreateTempSubdirectory("nr-audio-export-");
         try
         {
@@ -55,7 +56,7 @@ public class AespCatalogTests
             string archive = Path.Combine(dir.FullName, "source.aesp");
             byte[] wem = CreatePcmWem(4, 100);
             WriteFixture(archive, [("101", 101UL, wem)]);
-            var catalog = AespCatalog.ScanSources([new AespSource(archive, "source.aesp", "", false)], ct);
+            var catalog = AespCatalog.ScanSources([new AespSource(archive, "source.aesp", "")], ct);
             using var decoder = new VgmstreamDecoder(catalog, 0);
             string output = Path.Combine(dir.FullName, "101.wav");
             var metadata = new WavMetadata("four_channel_test", "play_test_sound", "Dying Light: The Beast - source",
@@ -86,13 +87,14 @@ public class AespCatalogTests
     [Fact]
     public void WavExportEmbedsIdentityAndPreservesInclusiveLoopEnd()
     {
+        VgmstreamDecoderTests.RequireDecoder();
         var dir = Directory.CreateTempSubdirectory("nr-audio-export-");
         try
         {
             var ct = TestContext.Current.CancellationToken;
             string archive = Path.Combine(dir.FullName, "source.aesp");
             WriteFixture(archive, [("101", 101UL, CreateLoopedPcmWem())]);
-            var catalog = AespCatalog.ScanSources([new AespSource(archive, "source.aesp", "", false)], ct);
+            var catalog = AespCatalog.ScanSources([new AespSource(archive, "source.aesp", "")], ct);
             using var decoder = new VgmstreamDecoder(catalog, 0);
             Assert.True(decoder.HasLoop);
             Assert.Equal(10, decoder.LoopStartSample);
@@ -143,14 +145,14 @@ public class AespCatalogTests
                 ("weapons_pre", 2UL, CreateBank(wem)),
                 ("broken", 3UL, "not audio"u8.ToArray()),
             ]);
-            var catalog = AespCatalog.ScanSources([new AespSource(path, "test.aesp", "", false)], TestContext.Current.CancellationToken);
+            var catalog = AespCatalog.ScanSources([new AespSource(path, "test.aesp", "")], TestContext.Current.CancellationToken);
 
             Assert.Equal(0, catalog.ErrorCount);
             Assert.Empty(catalog.Warnings);
             Assert.Equal(5, catalog.Archives[0].TableRowCount);
             Assert.Equal(3, catalog.Entries.Count);
             Assert.Equal("test", catalog.Archives[0].HeaderName);
-            Assert.Equal(42UL, catalog.Archives[0].Priority);
+            Assert.Equal(42UL, catalog.Archives[0].Unknown98);
             Assert.Equal(catalog.Entries[0].Offset, catalog.Entries[1].Offset);
             Assert.Equal(AespEntryKind.LooseWem, catalog.Entries[0].Kind);
             Assert.Equal(AespEntryKind.BankWem, catalog.Entries[2].Kind);
@@ -177,7 +179,7 @@ public class AespCatalogTests
         {
             var path = Path.Combine(dir.FullName, "test.aesp");
             WriteFixture(path, [("11", 11UL, CreateWem()), ("bad_bank", 12UL, "BKHD"u8.ToArray())]);
-            var catalog = AespCatalog.ScanSources([new AespSource(path, "test.aesp", "", false)], TestContext.Current.CancellationToken);
+            var catalog = AespCatalog.ScanSources([new AespSource(path, "test.aesp", "")], TestContext.Current.CancellationToken);
             Assert.Equal(0, catalog.ErrorCount);
             Assert.Single(catalog.Entries);
             Assert.Single(catalog.Warnings);
@@ -200,8 +202,8 @@ public class AespCatalogTests
             File.WriteAllBytes(bad, bytes);
 
             var catalog = AespCatalog.ScanSources([
-                new AespSource(bad, "bad.aesp", "", false),
-                new AespSource(good, "good.aesp", "", false),
+                new AespSource(bad, "bad.aesp", ""),
+                new AespSource(good, "good.aesp", ""),
             ], TestContext.Current.CancellationToken);
             Assert.Single(catalog.Entries);
             Assert.Equal(1, catalog.ErrorCount);
@@ -222,7 +224,7 @@ public class AespCatalogTests
             var bytes = File.ReadAllBytes(path);
             BinaryPrimitives.WriteUInt64LittleEndian(bytes.AsSpan(0x90), ulong.MaxValue);
             File.WriteAllBytes(path, bytes);
-            var source = new AespSource(path, "bad.aesp", "", false);
+            var source = new AespSource(path, "bad.aesp", "");
             var catalog = AespCatalog.ScanSources([source], TestContext.Current.CancellationToken);
             Assert.Equal(1, catalog.ErrorCount);
             Assert.Empty(catalog.Entries);
@@ -234,28 +236,51 @@ public class AespCatalogTests
     }
 
     [Fact]
-    public void DiscoversLocalizedAndOptInCustomArchives()
+    public void DiscoversLocalizedArchivesAndTreatsLeftoverLoaderFolderAsAudio()
     {
         var dir = Directory.CreateTempSubdirectory("nr-aesp-");
         try
         {
             var audio = Path.Combine(dir.FullName, "ph_ft", "work", "data", "audio");
-            var custom = Path.Combine(audio, "custom_audio");
+            // The removed first runtime's loader folder: a leftover archive there is one more archive of the
+            // recursive scan, the same rule as a leftover pack under the assets folder.
+            var leftover = Path.Combine(audio, "custom_audio");
             var language = Path.Combine(dir.FullName, "ph_ft", "work", "data_lang", "speech_en", "data", "audio");
-            Directory.CreateDirectory(custom);
+            var mods = Path.Combine(dir.FullName, "ph_ft", "work", "bin", "x64", "Nightrunner", "mods", "m");
+            Directory.CreateDirectory(leftover);
             Directory.CreateDirectory(language);
+            Directory.CreateDirectory(mods);
             WriteFixture(Path.Combine(audio, "streams.aesp"), [("11", 11UL, CreateWem())]);
-            WriteFixture(Path.Combine(custom, "mod.aesp"), [("12", 12UL, CreateWem())]);
+            WriteFixture(Path.Combine(leftover, "old.aesp"), [("12", 12UL, CreateWem())]);
             WriteFixture(Path.Combine(language, "streams_en.aesp"), [("13", 13UL, CreateWem())]);
+            WriteFixture(Path.Combine(mods, "mod.aesp"), [("14", 14UL, CreateWem())]);
             var install = new GameInstall(dir.FullName, GameProfile.Dltb);
 
-            var stock = AespCatalog.FindSources(install);
-            Assert.Equal(2, stock.Length);
-            Assert.DoesNotContain(stock, source => source.IsCustom);
-            Assert.Contains(stock, source => source.Language == "speech_en");
-            var all = AespCatalog.FindSources(install, includeCustom: true);
-            Assert.Equal(3, all.Length);
-            Assert.Contains(all, source => source.IsCustom && Path.GetFileName(source.Path) == "mod.aesp");
+            var sources = AespCatalog.FindSources(install);
+            Assert.Equal(3, sources.Length);
+            Assert.Contains(sources, source => source.Language == "speech_en");
+            Assert.Contains(sources, source => Path.GetFileName(source.Path) == "old.aesp" && source.Language == "");
+            // NightrunnerProxy does not load audio, so nothing under its folder is listed.
+            Assert.DoesNotContain(sources, source => Path.GetFileName(source.Path) == "mod.aesp");
+        }
+        finally { Directory.Delete(dir.FullName, recursive: true); }
+    }
+
+    [Fact]
+    public void RefusesArchiveWhoseTableOffsetFieldsDisagree()
+    {
+        var dir = Directory.CreateTempSubdirectory("nr-aesp-");
+        try
+        {
+            var path = Path.Combine(dir.FullName, "split.aesp");
+            WriteFixture(path, [("11", 11UL, CreateWem())]);
+            var bytes = File.ReadAllBytes(path);
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(0xA0), AespCatalog.HeaderSize + AespCatalog.RowSize);
+            File.WriteAllBytes(path, bytes);
+            var catalog = AespCatalog.ScanSources([new AespSource(path, "split.aesp", "")], TestContext.Current.CancellationToken);
+            Assert.Equal(1, catalog.ErrorCount);
+            Assert.Empty(catalog.Entries);
+            Assert.Contains("disagree", catalog.Archives[0].Error);
         }
         finally { Directory.Delete(dir.FullName, recursive: true); }
     }
@@ -277,7 +302,7 @@ public class AespCatalogTests
                 ("test_bank", 1UL, CreateNamedBank(CreateWem(), eventId)),
             ]);
             var ct = TestContext.Current.CancellationToken;
-            var catalog = AespCatalog.ScanSources([new AespSource(path, "names.aesp", "", false)], ct);
+            var catalog = AespCatalog.ScanSources([new AespSource(path, "names.aesp", "")], ct);
             var names = AudioNameIndex.Build(catalog, ct);
             Assert.Equal(1, names.EventCount);
             Assert.Equal(1, names.MediaCount);
@@ -348,7 +373,7 @@ public class AespCatalogTests
     public void InstalledDltbCatalogContainsWeaponWemsButNotMusicPrefetch()
     {
         var install = Installs.Require("dltb");
-        var sources = AespCatalog.FindSources(install, includeCustom: false);
+        var sources = AespCatalog.FindSources(install);
         Assert.Contains(sources, s => Path.GetFileName(s.Path).Equals("streams.aesp", StringComparison.OrdinalIgnoreCase));
         var clock = Stopwatch.StartNew();
         var catalog = AespCatalog.ScanSources(sources, TestContext.Current.CancellationToken);
@@ -518,6 +543,7 @@ public class AespCatalogTests
         BinaryPrimitives.WriteUInt64LittleEndian(bytes.AsSpan(0x88), AespCatalog.HeaderSize);
         BinaryPrimitives.WriteUInt64LittleEndian(bytes.AsSpan(0x90), (ulong)rows.Length);
         BinaryPrimitives.WriteUInt64LittleEndian(bytes.AsSpan(0x98), 42);
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(0xA0), AespCatalog.HeaderSize);
         for (int i = 0; i < rows.Length; i++)
         {
             var row = bytes.AsSpan(AespCatalog.HeaderSize + i * AespCatalog.RowSize, AespCatalog.RowSize);

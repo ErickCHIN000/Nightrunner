@@ -4,9 +4,68 @@ namespace Nightrunner.Tests;
 
 public class VgmstreamDecoderTests
 {
+    /// <summary>Decoding is optional: the native decoder is not in the repository (third_party/vgmstream/README.md).</summary>
+    internal static void RequireDecoder()
+    {
+        if (AudioDecoding.Status is { Available: false } status)
+            Assert.Skip($"audio decoder not available: {status.Reason}");
+    }
+
+    [Fact]
+    public void ProbeNamesWhatIsMissing()
+    {
+        var dir = Directory.CreateTempSubdirectory("nr-decoder-probe-");
+        try
+        {
+            var none = AudioDecoding.Probe(dir.FullName);
+            Assert.False(none.Available);
+            Assert.Equal("libvgmstream.dll not found", none.Reason);
+
+            File.WriteAllBytes(Path.Combine(dir.FullName, AudioDecoding.DecoderFile), [0x4D, 0x5A]);
+            var noVorbis = AudioDecoding.Probe(dir.FullName);
+            Assert.False(noVorbis.Available);
+            Assert.Equal("libvorbis.dll not found", noVorbis.Reason);
+
+            // Both present but not loadable (not a real DLL): a load failure, never a crash.
+            File.WriteAllBytes(Path.Combine(dir.FullName, AudioDecoding.VorbisFile), [0x4D, 0x5A]);
+            var broken = AudioDecoding.Probe(dir.FullName);
+            Assert.False(broken.Available);
+            Assert.Contains("libvgmstream.dll", broken.Detail);
+        }
+        finally { Directory.Delete(dir.FullName, recursive: true); }
+    }
+
+    [Fact]
+    public void UndisposedDecoderIsReclaimed()
+    {
+        RequireDecoder();
+        var catalog = AespCatalog.Scan(Installs.Require("dltb"), ct: TestContext.Current.CancellationToken);
+        int index = -1;
+        for (int i = 0; i < catalog.Entries.Count && index < 0; i++)
+            if (catalog.Entries[i].Size is > 20_000 and < 300_000) index = i;
+        var dropped = Abandon(catalog, index, 50);
+        for (int k = 0; k < 3; k++) { GC.Collect(); GC.WaitForPendingFinalizers(); }
+        // A strong GCHandle to itself used to keep every undisposed decoder (native state, archive handle) alive forever.
+        Assert.DoesNotContain(dropped, w => w.IsAlive);
+    }
+
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+    private static WeakReference[] Abandon(AespCatalog catalog, int index, int count)
+    {
+        var weak = new WeakReference[count];
+        for (int k = 0; k < count; k++)
+        {
+            var decoder = new VgmstreamDecoder(catalog, index);
+            decoder.Read(new byte[decoder.BlockAlign * 1024]);
+            weak[k] = new WeakReference(decoder);
+        }
+        return weak;
+    }
+
     [Fact]
     public void ExportsInstalledWeaponVorbisAsWav()
     {
+        RequireDecoder();
         var ct = TestContext.Current.CancellationToken;
         var catalog = AespCatalog.Scan(Installs.Require("dltb"), ct: ct);
         int index = -1;
@@ -42,8 +101,27 @@ public class VgmstreamDecoderTests
     }
 
     [Fact]
+    public void ArchiveReadFailureMidDecodeThrowsInsteadOfSilence()
+    {
+        RequireDecoder();
+        var catalog = AespCatalog.Scan(Installs.Require("dltb"), ct: TestContext.Current.CancellationToken);
+        int index = -1;
+        for (int i = 0; i < catalog.Entries.Count && index < 0; i++)
+            if (catalog.Entries[i].Size is > 1_000_000 and < 4_000_000) index = i;
+        using var decoder = new VgmstreamDecoder(catalog, index);
+        byte[] pcm = new byte[decoder.BlockAlign * 4096];
+        Assert.True(decoder.Read(pcm) > 0);
+        // The archive goes away under the decoder (a removed drive, a replaced file). vgmstream fills the gap with
+        // silence; the read must fail instead, or an export writes a full-length WAV of silence.
+        ((FileStream)typeof(VgmstreamDecoder).GetField("_file", System.Reflection.BindingFlags.NonPublic |
+                                                                System.Reflection.BindingFlags.Instance)!.GetValue(decoder)!).Dispose();
+        Assert.Throws<IOException>(() => { while (decoder.Read(pcm) > 0) { } });
+    }
+
+    [Fact]
     public void PlayerDownmixKeepsSourceChannelCountAvailable()
     {
+        RequireDecoder();
         var ct = TestContext.Current.CancellationToken;
         var install = Installs.Require("dltb");
         var catalog = AespCatalog.Scan(install, ct: ct);
@@ -77,6 +155,7 @@ public class VgmstreamDecoderTests
     [Fact]
     public void DecodesAndSeeksInstalledLooseAndWeaponWems()
     {
+        RequireDecoder();
         var install = Installs.Require("dltb");
         var catalog = AespCatalog.Scan(install, ct: TestContext.Current.CancellationToken);
         int[] indices = [

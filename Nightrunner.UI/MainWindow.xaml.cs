@@ -88,6 +88,9 @@ public sealed partial class MainWindow : Window, IPanelHost
             if (Environment.GetEnvironmentVariable("NIGHTRUNNER_PROJECTSCHECK") is { Length: > 0 } projectsFolder)
                 _ = RunProjectsCheck(projectsFolder).ContinueWith(t => System.IO.File.WriteAllText(System.IO.Path.Combine(projectsFolder, "error.txt"), t.Exception!.ToString()),
                                                  TaskContinuationOptions.OnlyOnFaulted);
+            if (Environment.GetEnvironmentVariable("NIGHTRUNNER_AUDIOCHECK") is { Length: > 0 } audioFolder)
+                _ = RunAudioCheck(audioFolder).ContinueWith(t => System.IO.File.WriteAllText(System.IO.Path.Combine(audioFolder, "error.txt"), t.Exception!.ToString()),
+                                                   TaskContinuationOptions.OnlyOnFaulted);
             if (Environment.GetEnvironmentVariable("NIGHTRUNNER_BUILDCHECK") is { Length: > 0 } buildFolder)
                 _ = RunBuildCheck(buildFolder).ContinueWith(t => System.IO.File.WriteAllText(System.IO.Path.Combine(buildFolder, "error.txt"), t.Exception!.ToString()),
                                                  TaskContinuationOptions.OnlyOnFaulted);

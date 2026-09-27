@@ -18,8 +18,7 @@ public partial class AudioInspector : UserControl
                     $"{archive.Source.RelativePath}\n" +
                     $"header name  {archive.HeaderName}\n" +
                     $"language     {archive.Source.Language}\n" +
-                    $"custom       {archive.Source.IsCustom}\n" +
-                    $"priority     {archive.Priority}\n" +
+                    $"0x98         0x{archive.Unknown98:X}\n" +
                     $"table offset 0x{archive.TableOffset:X}\n" +
                     $"table rows   {archive.TableRowCount:N0}\n" +
                     $"WEMs         {archive.EntryCount:N0}\n" +
@@ -32,6 +31,8 @@ public partial class AudioInspector : UserControl
     {
         CancelProbe();
         Info.Text = EntryText(selection, null);
+        // Codec details come from the optional decoder; without it there is nothing to probe (and nothing to log again).
+        if (!AudioDecoding.Status.Available) return this;
         var cts = new CancellationTokenSource();
         _probeCts = cts;
         _ = ProbeAsync(selection, cts);
@@ -88,6 +89,7 @@ public partial class AudioInspector : UserControl
             ? audio.Duration.TotalHours >= 1 ? audio.Duration.ToString(@"h\:mm\:ss") : audio.Duration.ToString(@"m\:ss")
             : "—";
         return $"{entry.Name}\n" +
+                    (AudioDecoding.Status.Available ? "" : "decoder      none\n") +
                     $"duration     {duration}\n" +
                     $"codec        {details?.Codec ?? "—"}\n" +
                     $"channels     {details?.Channels.ToString() ?? "—"}\n" +

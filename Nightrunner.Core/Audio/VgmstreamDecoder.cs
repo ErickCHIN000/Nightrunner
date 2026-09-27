@@ -41,8 +41,11 @@ public sealed class VgmstreamDecoder : IDisposable
         }
     }
 
+    /// <exception cref="AudioDecoderUnavailableException">The optional native decoder is missing or unusable (<see cref="AudioDecoding.Status"/>).</exception>
     public VgmstreamDecoder(AespCatalog catalog, int entryIndex, bool downmixToStereo = false)
     {
+        if (AudioDecoding.Status is { Available: false } status)
+            throw new AudioDecoderUnavailableException(status.Reason);
         var entry = catalog.Entries[entryIndex];
         var archive = catalog.Archives[entry.ArchiveId];
         _file = new FileStream(archive.Source.Path, FileMode.Open, FileAccess.Read,
@@ -51,7 +54,9 @@ public sealed class VgmstreamDecoder : IDisposable
         _length = entry.Size;
         _name = entry.Name;
         _namePointer = Marshal.StringToCoTaskMemUTF8(_name);
-        _self = GCHandle.Alloc(this);
+        // Weak: the native streamfile only calls back while one of this decoder's methods runs, and a strong handle would
+        // keep a decoder nobody disposed alive (with its native state and archive handle) for the life of the process.
+        _self = GCHandle.Alloc(this, GCHandleType.Weak);
 
         try
         {
@@ -59,10 +64,6 @@ public sealed class VgmstreamDecoder : IDisposable
                 _offset > _file.Length || _length > _file.Length - _offset ||
                 !BankMediaReader.IsCompleteWem(_file, _offset, _length))
                 throw new IOException("Audio archive changed after scanning; reload the Explorer");
-
-            uint version = Native.GetVersion();
-            if (version != 0x01010000)
-                throw new NotSupportedException($"Unsupported libvgmstream API version 0x{version:X8}");
 
             // Playback can downmix; exports leave the original channel count intact.
             var config = new Native.Config
@@ -74,7 +75,7 @@ public sealed class VgmstreamDecoder : IDisposable
             IntPtr streamfile = CreateStreamfile();
             try { _native = Native.Create(streamfile, 0, ref config); }
             finally { Native.CloseStreamfile(streamfile); }
-            if (_native == IntPtr.Zero)
+            if (_native == IntPtr.Zero || _readError is not null)
                 throw new InvalidDataException(_readError is null ? "vgmstream could not decode this WEM" :
                                                $"vgmstream could not read this WEM: {_readError.Message}");
 
@@ -121,7 +122,8 @@ public sealed class VgmstreamDecoder : IDisposable
             int status;
             fixed (byte* buffer = destination)
                 status = Native.Fill(_native, (IntPtr)buffer, samples);
-            if (status < 0)
+            // vgmstream fills silence when the streamfile comes up short, so a failed archive read shows only here
+            if (status < 0 || _readError is not null)
                 throw new IOException(_readError is null ? "WEM decoding failed" : _readError.Message, _readError);
             IntPtr decoder = Marshal.ReadIntPtr(_native, 2 * IntPtr.Size);
             int bytes = Marshal.ReadInt32(decoder, IntPtr.Size + 4);
@@ -144,16 +146,23 @@ public sealed class VgmstreamDecoder : IDisposable
 
     public void Dispose()
     {
-        lock (_gate)
-        {
-            if (_disposed) return;
-            _disposed = true;
-            if (_native != IntPtr.Zero) Native.Free(_native);
-            _native = IntPtr.Zero;
-            _file.Dispose();
-            if (_self.IsAllocated) _self.Free();
-            Marshal.FreeCoTaskMem(_namePointer);
-        }
+        lock (_gate) Release(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>A decoder nobody disposed still frees its native state; the archive handle finalizes on its own.</summary>
+    ~VgmstreamDecoder() => Release(disposing: false);
+
+    private void Release(bool disposing)
+    {
+        if (_disposed) return;
+        _disposed = true;
+        // libvgmstream_free only calls the streamfile close callback, which needs no managed state.
+        if (_native != IntPtr.Zero) Native.Free(_native);
+        _native = IntPtr.Zero;
+        if (disposing) _file.Dispose();
+        if (_self.IsAllocated) _self.Free();
+        Marshal.FreeCoTaskMem(_namePointer);
     }
 
     private void ThrowIfDisposed() => ObjectDisposedException.ThrowIf(_disposed, this);
@@ -243,8 +252,6 @@ public sealed class VgmstreamDecoder : IDisposable
             public int ForceSampleFormat;
         }
 
-        [DllImport("libvgmstream", EntryPoint = "libvgmstream_get_version", CallingConvention = CallingConvention.Cdecl)]
-        internal static extern uint GetVersion();
         [DllImport("libvgmstream", EntryPoint = "libvgmstream_create", CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr Create(IntPtr streamfile, int subsong, ref Config config);
         [DllImport("libvgmstream", EntryPoint = "libstreamfile_close", CallingConvention = CallingConvention.Cdecl)]

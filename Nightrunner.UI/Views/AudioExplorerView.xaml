@@ -14,8 +14,7 @@
             <ComboBox DockPanel.Dock="Right" x:Name="KindFilter" Width="130"
                       SelectionChanged="Filter_Changed"/>
             <Label DockPanel.Dock="Right" Content="type"/>
-            <TextBox x:Name="Search" Margin="0,0,12,0" TextChanged="Search_TextChanged"
-                     ToolTip="Search WEM IDs, bank names and archive paths. Ctrl+F focuses here."/>
+            <TextBox x:Name="Search" Margin="0,0,12,0" TextChanged="Search_TextChanged"/>
         </DockPanel>
 
         <Grid Grid.Row="1">
@@ -64,10 +63,8 @@
                       VirtualizingPanel.CacheLengthUnit="Page">
                 <ListView.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Export .wem..." Click="Export_Click" Tag="wem"
-                                  ToolTip="Copy the original WEM bytes from the archive"/>
-                        <MenuItem Header="Export .wav..." Click="Export_Click" Tag="wav"
-                                  ToolTip="Decode to 16-bit PCM WAV with the source channels"/>
+                        <MenuItem Header="Export .wem..." Click="Export_Click" Tag="wem"/>
+                        <MenuItem x:Name="ExportWavItem" Header="Export .wav..." Click="Export_Click" Tag="wav"/>
                     </ContextMenu>
                 </ListView.ContextMenu>
                 <ListView.View>
@@ -116,7 +113,7 @@
                     <DockPanel>
                         <TextBlock DockPanel.Dock="Right" x:Name="PlayerStatus" Style="{StaticResource Dim}"
                                    Text="ready" Margin="12,0,0,0"/>
-                        <TextBlock x:Name="PlayerTitle" Text="Double-click a WEM to play"
+                        <TextBlock x:Name="PlayerTitle" Text=""
                                    TextTrimming="CharacterEllipsis" Foreground="{StaticResource FgBright}"/>
                     </DockPanel>
                     <DockPanel Grid.Row="1" Margin="0,7,0,0" LastChildFill="True">
