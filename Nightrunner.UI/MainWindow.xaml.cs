@@ -671,7 +671,7 @@ public sealed partial class MainWindow : Window, IPanelHost
     private void FocusSearch()
     {
         if (Dock.Visibility != Visibility.Visible) return;
-        var active = _open.Values.FirstOrDefault(i => i.IsActive && i.Content is RawExplorerView or TexturesView)
+        var active = _open.Values.FirstOrDefault(i => i.IsActive && i.Content is RawExplorerView or TexturesView or AudioExplorerView)
                      ?? _open.GetValueOrDefault("raw")
                      ?? _open.GetValueOrDefault("textures");
         if (active is null) return;

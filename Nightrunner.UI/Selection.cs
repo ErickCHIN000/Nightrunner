@@ -1,3 +1,4 @@
+using Nightrunner.Core.Audio;
 using Nightrunner.Core.Project;
 using Nightrunner.Core.Rpack;
 using Nightrunner.Core.Sdb;
@@ -62,6 +63,10 @@ public abstract record Selected
     /// </summary>
     public sealed record Mod(Nightrunner.Core.Games.RuntimeMod Value, Nightrunner.Core.Games.RuntimeCheck? Runtime,
                              IReadOnlyList<Nightrunner.Core.Games.RuntimeOverride>? Overrides, string Loads) : Selected;
+
+    public sealed record AudioArchive(AespCatalog Catalog, int ArchiveId) : Selected;
+
+    public sealed record AudioEntry(AespCatalog Catalog, int EntryIndex, AudioNameIndex? Names) : Selected;
 }
 
 /// <summary>

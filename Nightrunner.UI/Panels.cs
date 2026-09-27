@@ -61,6 +61,7 @@ public static class Panels
         new("models", "Models", c => new ModelsView(c)) { OpenByDefault = false },
         new("prefabs", "Prefabs", c => new PrefabsView(c)) { OpenByDefault = false },
         new("animations", "Animations", c => new AnimationsView(c)) { OpenByDefault = false },
+        new("audio", "Audio", c => new AudioExplorerView(c)) { OpenByDefault = false },
         new("viewport", "Viewport", c => new ViewportView(c)) { OpenByDefault = false },
         new("projects", "Projects", c => new ProjectsView(c)) { OpenByDefault = false },
         new("build", "Build", c => new BuildView(c)) { OpenByDefault = false },
@@ -76,7 +77,6 @@ public static class Panels
             OpenByDefault = false,
             Extent = 220,
         },
-        // Texture usage, Presets, the SDB database page and Audio land here — one row each.
     ];
 
     public static PanelDef? ById(string id) =>

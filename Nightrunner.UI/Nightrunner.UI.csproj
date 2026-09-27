@@ -29,9 +29,15 @@
 
 
   <ItemGroup>
+    <None Include="..\third_party\vgmstream\win-x64\*.dll" Link="%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dirkster.AvalonDock" Version="5.0.0" />
     <PackageReference Include="Dirkster.AvalonDock.Themes.VS2013" Version="5.0.0" />
     <PackageReference Include="HelixToolkit.Wpf.SharpDX" Version="3.1.2" />
+    <PackageReference Include="NAudio.Wasapi" Version="3.1.0" />
   </ItemGroup>
 
 </Project>

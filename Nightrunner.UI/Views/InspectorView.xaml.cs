@@ -24,6 +24,7 @@ public partial class InspectorView : UserControl
     private PrefabInspector? _prefab;
     private ModInspector? _mod;
     private BuildItemInspector? _buildItem;
+    private AudioInspector? _audio;
 
     public InspectorView(PanelContext ctx)
     {
@@ -34,10 +35,15 @@ public partial class InspectorView : UserControl
     }
 
     /// <summary>Stop following the selection — called when this window is closed for good.</summary>
-    public void Detach() => _ctx.Selection.Changed -= Show;
+    public void Detach()
+    {
+        _ctx.Selection.Changed -= Show;
+        _audio?.CancelProbe();
+    }
 
     private void Show(Selected? what, string source)
     {
+        if (what is not Selected.AudioEntry) _audio?.CancelProbe();
         Origin.Text = what is null ? "" : source;
         switch (what)
         {
@@ -96,6 +102,14 @@ public partial class InspectorView : UserControl
             case Selected.Material material:
                 Kind.Text = "material";
                 Host.Content = (_material ??= new MaterialInspector(_ctx.Workspace, _ctx.Host)).With(material);
+                break;
+            case Selected.AudioArchive archive:
+                Kind.Text = "audio archive";
+                Host.Content = (_audio ??= new AudioInspector()).With(archive);
+                break;
+            case Selected.AudioEntry entry:
+                Kind.Text = "audio entry";
+                Host.Content = (_audio ??= new AudioInspector()).With(entry);
                 break;
             default:
                 Kind.Text = "nothing selected";

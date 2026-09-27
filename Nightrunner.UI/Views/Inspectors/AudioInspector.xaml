@@ -1,0 +1,8 @@
+<UserControl x:Class="Nightrunner.UI.Views.Inspectors.AudioInspector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource Bg}" Foreground="{StaticResource Fg}"
+             FontFamily="{StaticResource UiFont}" FontSize="{StaticResource UiSize}">
+    <TextBox x:Name="Info" Style="{StaticResource Mono}" IsReadOnly="True"
+             TextWrapping="NoWrap"/>
+</UserControl>

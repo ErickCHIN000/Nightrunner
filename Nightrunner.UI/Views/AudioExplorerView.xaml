@@ -1,0 +1,152 @@
+<UserControl x:Class="Nightrunner.UI.Views.AudioExplorerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource Bg}" Foreground="{StaticResource Fg}"
+             FontFamily="{StaticResource UiFont}" FontSize="{StaticResource UiSize}">
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" LastChildFill="True" Margin="0,0,0,8">
+            <ComboBox DockPanel.Dock="Right" x:Name="KindFilter" Width="130"
+                      SelectionChanged="Filter_Changed"/>
+            <Label DockPanel.Dock="Right" Content="type"/>
+            <TextBox x:Name="Search" Margin="0,0,12,0" TextChanged="Search_TextChanged"
+                     ToolTip="Search WEM IDs, bank names and archive paths. Ctrl+F focuses here."/>
+        </DockPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="235" MinWidth="140"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*" MinWidth="380"/>
+            </Grid.ColumnDefinitions>
+
+            <DockPanel Grid.Column="0" Grid.RowSpan="2">
+                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,4">
+                    <Button DockPanel.Dock="Right" Content="all" Padding="9,2" Click="ClearFilter_Click"/>
+                    <TextBlock x:Name="ArchiveHeader" Style="{StaticResource Dim}" Text="archives"/>
+                </DockPanel>
+                <ListBox x:Name="ArchiveList" Style="{StaticResource PlainList}" SelectionMode="Extended"
+                         SelectionChanged="ArchiveList_SelectionChanged"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis"
+                                           Foreground="{StaticResource FgBright}" ToolTip="{Binding Path}"/>
+                                <TextBlock Text="{Binding Summary}" FontSize="11.5"
+                                           Foreground="{Binding SummaryBrush}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+
+            <GridSplitter Grid.Column="1" Grid.RowSpan="2" Width="5" HorizontalAlignment="Stretch"/>
+
+            <ListView Grid.Column="2" Grid.Row="0" x:Name="Rows" SelectionMode="Extended"
+                      MouseDoubleClick="Rows_MouseDoubleClick"
+                      ContextMenuOpening="Rows_ContextMenuOpening"
+                      SelectionChanged="Rows_SelectionChanged" SizeChanged="Rows_SizeChanged"
+                      VirtualizingPanel.IsVirtualizing="True"
+                      VirtualizingPanel.VirtualizationMode="Recycling"
+                      VirtualizingPanel.ScrollUnit="Item"
+                      VirtualizingPanel.CacheLength="2,2"
+                      VirtualizingPanel.CacheLengthUnit="Page">
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Export .wem..." Click="Export_Click" Tag="wem"
+                                  ToolTip="Copy the original WEM bytes from the archive"/>
+                        <MenuItem Header="Export .wav..." Click="Export_Click" Tag="wav"
+                                  ToolTip="Decode to 16-bit PCM WAV with the source channels"/>
+                    </ContextMenu>
+                </ListView.ContextMenu>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn x:Name="ColName" Header="name" Width="210">
+                            <GridViewColumn.CellTemplate><DataTemplate>
+                                <TextBlock Text="{Binding Name}" Style="{StaticResource CellName}" ToolTip="{Binding Name}"/>
+                            </DataTemplate></GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="ID" Width="100">
+                            <GridViewColumn.CellTemplate><DataTemplate>
+                                <TextBlock Text="{Binding IdText}" Style="{StaticResource CellNum}"/>
+                            </DataTemplate></GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="source" Width="78">
+                            <GridViewColumn.CellTemplate><DataTemplate>
+                                <TextBlock Text="{Binding KindText}" Style="{StaticResource CellType}"/>
+                            </DataTemplate></GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="size" Width="86">
+                            <GridViewColumn.CellTemplate><DataTemplate>
+                                <TextBlock Text="{Binding SizeText}" Style="{StaticResource CellNum}"/>
+                            </DataTemplate></GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="archive" Width="154">
+                            <GridViewColumn.CellTemplate><DataTemplate>
+                                <TextBlock Text="{Binding ArchiveLabel}" Style="{StaticResource CellDim}" ToolTip="{Binding ArchiveLabel}"/>
+                            </DataTemplate></GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="language" Width="94">
+                            <GridViewColumn.CellTemplate><DataTemplate>
+                                <TextBlock Text="{Binding LanguageText}" Style="{StaticResource CellDim}"/>
+                            </DataTemplate></GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+            <Border Grid.Column="2" Grid.Row="1" Margin="0,6,0,0" Padding="8"
+                    Background="{StaticResource Bg2}" BorderBrush="{StaticResource Line}" BorderThickness="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Right" x:Name="PlayerStatus" Style="{StaticResource Dim}"
+                                   Text="ready" Margin="12,0,0,0"/>
+                        <TextBlock x:Name="PlayerTitle" Text="Double-click a WEM to play"
+                                   TextTrimming="CharacterEllipsis" Foreground="{StaticResource FgBright}"/>
+                    </DockPanel>
+                    <DockPanel Grid.Row="1" Margin="0,7,0,0" LastChildFill="True">
+                        <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="0,0,8,0">
+                            <Button x:Name="PlayPauseButton" Content="Play" Width="56" Padding="4,2"
+                                    IsEnabled="False" Click="PlayPause_Click"/>
+                            <Button x:Name="StopButton" Content="Stop" Width="50" Padding="4,2"
+                                    Margin="5,0,0,0" IsEnabled="False" Click="Stop_Click"/>
+                        </StackPanel>
+                        <Slider DockPanel.Dock="Right" x:Name="VolumeSlider" Width="78" Margin="9,0,0,0"
+                                Minimum="0" Maximum="1" Value="0.8" VerticalAlignment="Center"
+                                ToolTip="Volume" ValueChanged="Volume_Changed"/>
+                        <TextBlock DockPanel.Dock="Right" x:Name="PlayerTime" Width="100" Text="0:00 / 0:00"
+                                   TextAlignment="Right" VerticalAlignment="Center" FontFamily="{StaticResource MonoFont}"
+                                   Foreground="{StaticResource FgDim}"/>
+                        <Slider x:Name="SeekSlider" Minimum="0" Maximum="1" IsEnabled="False"
+                                IsMoveToPointEnabled="True" VerticalAlignment="Center"
+                                PreviewMouseLeftButtonDown="Seek_PointerDown"
+                                PreviewMouseLeftButtonUp="Seek_PointerUp"
+                                LostMouseCapture="Seek_LostCapture" KeyUp="Seek_KeyUp"
+                                ValueChanged="Seek_ValueChanged"/>
+                    </DockPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <DockPanel Grid.Row="2" Margin="2,8,2,0">
+            <TextBlock DockPanel.Dock="Right" x:Name="Timing" Foreground="{DynamicResource Accent}"
+                       FontFamily="{StaticResource MonoFont}" FontSize="12"/>
+            <TextBlock x:Name="Status" Style="{StaticResource Dim}" Text="no game"/>
+        </DockPanel>
+    </Grid>
+</UserControl>
